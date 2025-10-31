@@ -19,3 +19,5 @@ const R04_Props2 = ({변수1번, 변수2번}) => {
         </>
     );
 };
+
+export default R04_Props2;

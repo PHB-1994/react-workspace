@@ -10,6 +10,8 @@ import MyProfile from "./components/practice/MyProfile";
 import Greeting from "./components/practice/Greeting";
 import Product from "./components/practice/Product";
 import Weather from "./components/practice/Weather";
+import PropsEx3 from "./components/R05_Props3";
+import ChildComponent from "./components/R06_Props4";
 
 /* App 컴포넌트 (최상위 컴포넌트)
 *
@@ -38,8 +40,11 @@ function App() {
        job 을 받는 곳의 데이터는 null 상태로 보여짐
        */}
        <PropsEx1 num='1' name='홍길동' age='20' score='90' />
-
        <PropsEx1 name='고말숙' age='30' num='2' score='100' />
+       <PropsEx3 name="강감찬" age='72' gender="남자" />
+       <ChildComponent name={'고말숙'} />
+       <ChildComponent name={'김영희'} />
+
        <MyProfile
            name="홍길동"
            age={20}
@@ -52,6 +57,7 @@ function App() {
 
        <Weather city="서울" temperature={25} />
        <Weather city="부산" temperature={28} />
+
    </>
   );
 }
