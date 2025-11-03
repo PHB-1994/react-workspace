@@ -29,8 +29,14 @@ const ChildIdState = (props) => {
     console.log(handler);
     return(
         <div style={styles.wrapper}>
-            <label htmlFor="inputId">ID </label>
-            <input type="text" id="inputId" onChange={handler} />
+            <label style={styles.label}
+                   htmlFor="inputId">
+                ID
+            </label>
+            <input style={styles.input}
+                   type="text"
+                   id="inputId"
+                   onChange={handler} />
 
         </div>
     )

@@ -6,10 +6,10 @@ import './App.css';
 import       ComponentEx       from "./components/R01_ClassComponent";
 import FunctionEx              from "./components/R02_FunctionComponent";
 import PropsEx1 from "./components/R03_Props1"; // css 를 얻어오고 아래 작성된 컴포넌트에 적용
-import MyProfile from "./components/practice/MyProfile";
-import Greeting from "./components/practice/Greeting";
-import Product from "./components/practice/Product";
-import Weather from "./components/practice/Weather";
+import MyProfile from "./components/practice/day1/MyProfile";
+import Greeting from "./components/practice/day1/Greeting";
+import Product from "./components/practice/day1/Product";
+import Weather from "./components/practice/day1/Weather";
 import PropsEx3 from "./components/R05_Props3";
 import ChildComponent from "./components/R06_Props4";
 import R08_State1 from "./components/R08_State1";
