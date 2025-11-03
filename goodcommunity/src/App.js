@@ -12,6 +12,10 @@ import Product from "./components/practice/Product";
 import Weather from "./components/practice/Weather";
 import PropsEx3 from "./components/R05_Props3";
 import ChildComponent from "./components/R06_Props4";
+import R08_State1 from "./components/R08_State1";
+import State2 from "./components/R09_State2";
+import ParentComponent from "./components/R10_State3";
+import ParentState from "./components/R10_State3_Components/ParentState";
 
 /* App 컴포넌트 (최상위 컴포넌트)
 *
@@ -31,14 +35,27 @@ function App() {
       */
    <>
        {/* 반드시 return 에서 시작과 끝을 감싸는 태그 하나 필요 */}
+       {/* <ParentComponent /> */}
+       <ParentState />
 
+       {/*
+       <R08_State1 />
+       <State2 init={50} step={10} />
+       */}
+
+
+       {/*
        <ComponentEx />
        <FunctionEx />
+       */}
+
        {/*
        PropsEx1 라는 함수에 데이터를 전달하는 방식
        전달할 데이터에서 변수이름 job 이 존재하지 않기 때문에
        job 을 받는 곳의 데이터는 null 상태로 보여짐
        */}
+
+       {/*
        <PropsEx1 num='1' name='홍길동' age='20' score='90' />
        <PropsEx1 name='고말숙' age='30' num='2' score='100' />
        <PropsEx3 name="강감찬" age='72' gender="남자" />
@@ -57,7 +74,7 @@ function App() {
 
        <Weather city="서울" temperature={25} />
        <Weather city="부산" temperature={28} />
-
+        */}
    </>
   );
 }
