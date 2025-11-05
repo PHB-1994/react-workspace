@@ -1,10 +1,15 @@
 import {createContext, useState} from "react";
-import Header from "./R11_Context_Theme/Header";
-import Content from "./R11_Context_Theme/Content";
-import Footer from "./R11_Context_Theme/Footer";
+import Header from "./components/R11_Context_Theme/Header";
+import Content from "./components/R11_Context_Theme/Content";
+import Footer from "./components/R11_Context_Theme/Footer";
+import {darkTheme, lightTheme} from "./components/R11_Context_Theme/themeStyles";
 
 // 테마를 위한 Context 생성
-const ThemeContext = createContext();
+// 한 페이지에서
+// 다수의 cconst 를 export 내보내기 처리할 수 있다.
+// export 는 다수로 작성하지만
+// export default 는 하나!
+export const ThemeContext = createContext();
 
 // 부모 컴포넌트 (전체 최상위 앱)
 const Main_Theme = () => {
@@ -21,12 +26,7 @@ const Main_Theme = () => {
         // Context 로 isDark 와 toggleTheme 함수를 모든 하위 컴포넌트에서
         // 사용하고 싶은 곳에서 사용할 수 있도록 제공하겠다.
         <ThemeContext.Provider value={{isDark, toggleTheme}}>
-            <div style={{
-                minHeight : '100vh',
-                backgroundColor : isDart ? '#222' : '#fff',
-                color : isDark ? '#fff' : '#222',
-                padding : '20px'
-            }}>
+            <div style={isDark ? darkTheme.main : lightTheme.main}>
                 <Header/>
                 <Content />
                 <Footer />
