@@ -55,7 +55,7 @@ const TemperatureConverter = () => {
 
     // 4. 온도에 따른 메시지 조건부 렌더링
     const getTemperatureMessage = () => {
-        const temp = parseFloat(setCelsius());
+        const temp = parseFloat(celsius);
 
         // if else if 이용해서 return 으로 "추워요 적당해요 더워요" 반환
 
