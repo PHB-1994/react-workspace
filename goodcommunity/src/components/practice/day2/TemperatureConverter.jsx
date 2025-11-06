@@ -4,10 +4,11 @@ import React, { useState } from 'react';
 const CelsiusInput = ({ value, handler }) => {
     return (
         <div>
-            <label>섭씨 (°C): </label>
+            <label>섭씨 (°C) : </label>
             {/* input 만들기 */}
             <input
-
+                value={value}
+                onChange={handler}
                 placeholder="온도를 입력하세요."/>
         </div>
     );
@@ -58,6 +59,13 @@ const TemperatureConverter = () => {
         const temp = parseFloat(celsius);
 
         // if else if 이용해서 return 으로 "추워요 적당해요 더워요" 반환
+        if(temp < 0) {
+            return <div>🥶 추워요</div>
+        } else if(temp <= 25) {
+            return <div>😊 적당해요</div>
+        } else {
+            return <div>🥵 더워요</div>
+        }
 
     }
 
@@ -71,7 +79,7 @@ const TemperatureConverter = () => {
             {/* KelvinDisplay */}
             <KelvinDisplay celsius={celsius} />
             {/* 온도 메시지 */}
-            {getTemperatureMessage}
+            {getTemperatureMessage()}
             {/* 초기화 버튼 */}
             <button onClick={handleReset}>
                 초기화
