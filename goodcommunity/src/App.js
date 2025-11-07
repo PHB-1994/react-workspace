@@ -20,6 +20,7 @@ import Parent from "./components/R12_Context2";
 import Effect1 from "./components/R13_Effect1";
 import Effect2 from "./components/R14_Effect2";
 import Effect3 from "./components/R15_Effect3";
+import PopularBoards from "./components/R16_Effect/PopularBoards";
 
 /* App 컴포넌트 (최상위 컴포넌트)
 *
@@ -44,7 +45,8 @@ function App() {
        {/*<Parent />*/}
        {/*<Effect1 />*/}
        {/*<Effect2 />*/}
-       <Effect3 />
+       {/*<Effect3 />*/}
+       <PopularBoards />
        {/*
        <R08_State1 />
        <State2 init={50} step={10} />
