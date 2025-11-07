@@ -13,7 +13,7 @@ const Main = () => {
             // .then(res => res.data)
             // 다른 기능을 할 필요를 못느껴서
             .then(res => {
-                console.log(boards); // System.out.print 데이터 확인
+                console.log(res.data); // System.out.print 데이터 확인
                 setBoards(res.data); // 확인된 데이터 배열에 넣어주기
             })
             .catch(e => {
