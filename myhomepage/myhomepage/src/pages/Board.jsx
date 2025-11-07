@@ -21,14 +21,18 @@ const Board = () => {
     useEffect(() => {
         axios.get("http://localhost:8085/api/board/all")
             .then(res => {
-                console.log("boards : ", boards); // res.data 백엔드에서 가져온 데이터를
+                console.log("1. boards : ", boards); // res.data 백엔드에서 가져온 데이터를
                 // boards 에 넣어주기 전 이므로, 데이터가 0 인 상태가 맞음
                 console.log("백엔드에서 가져온 데이터 : ", res.data);
                 console.log("백엔드에서 가져온 데이터를 boards 에 저장 : ", setBoards(res.data));
                 setBoards(res.data); // boards 변수이름에 데이터 저장 기능 실행
+                console.log("2. boards : ", boards);
+                console.log("3. setBoards: ", setBoards(res.data));
             })
             .catch(e => alert("데이터를 가져올 수 없습니다."))
     }, []);
+
+    // ㅇ
 
     const handleIDClick = (id) => {
         navigate(`/board/${id}`)
@@ -44,7 +48,7 @@ const Board = () => {
             </div>
 
             <div className="board-info">
-                <p>전체 게시물: 개</p>
+                <p>전체 게시물: {boards.length}개</p>
             </div>
 
             <table className="board-table">
@@ -57,7 +61,7 @@ const Board = () => {
                     <th>작성일</th>
                 </tr>
                 </thead>
-                <tbody>
+
                 {/*
                 content: "글쓰기 데이터 입력 됐나요?"
                 createdAt: "2025-11-07 11:56:00"
@@ -69,16 +73,22 @@ const Board = () => {
                 viewCount: 0
                 writer: "개발자"
                 */}
+                {/*
+                1. 제목 클릭해도 게시물에 들어가도록 설정
+                2. 에러 해결
+                */}
                 {boards.map((b) => (
-                <tr>
-                    <th onClick={() => handleIDClick(b.id)}>{b.id}</th>
-                    <th>{b.title}</th>
-                    <th>{b.writer}</th>
-                    <th>{b.viewCount}</th>
-                    <th>{b.createdAt}</th> {/* 2025-11-07 11:56:00 -> 2025-11-07 */}
-                </tr>
+                    <tbody onClick={() => handleIDClick(b.id)}>
+                        <tr key={b.id}>
+                            <td>{b.id}</td>
+                            <td>{b.title}</td>
+                            <td>{b.writer}</td>
+                            <td>{b.viewCount}</td>
+                            <td>{b.createdAt}</td> {/* 2025-11-07 11:56:00 -> 2025-11-07 */}
+                        </tr>
+                    </tbody>
                 ))}
-                </tbody>
+
             </table>
         </div>
     );

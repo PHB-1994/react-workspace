@@ -2,6 +2,7 @@ import React from 'react';
 import {Link, NavLink, Route, Routes} from "react-router-dom";
 import Main from "./pages/Main";
 import Board from "./pages/Board";
+import BoardDetail from "./pages/BoardDetail";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import MyPage from "./pages/MyPage";
@@ -35,6 +36,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Main/>} />
                 <Route path="/board" element={<Board/>} />
+                <Route path="/board/:id" element={<BoardDetail/>} />
                 <Route path="/signup" element={<Signup/>} />
                 <Route path="/login" element={<Login/>} />
                 <Route path="/mypage" element={<MyPage/>} />
