@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import MyPage from "./pages/MyPage";
 import Write from "./pages/Write";
 import "./App.css";
+import {useAuth} from "./context/AuthContext";
 // 단순히 가져와서 적용할 때는 from 생략
 
 // 1. 라우팅에 필요한 컴포넌트 임포트
@@ -18,6 +19,9 @@ import "./App.css";
 //    (실제로는 이 파일들을 src/pages/ 폴더에 따로 만들어야 합니다)
 
 function App() {
+    // AuthContext 에서 만든 컴포넌트
+    // 변수이름형태의 데이터만 가져와서 사용하기 {} 표기
+    const [user, isAuthenticated] = useAuth();
 
     return (
         <div className="App">
@@ -27,8 +31,16 @@ function App() {
                 <div className="nav-links">
                     <NavLink to="/">메인</NavLink>
                     <NavLink to="/board">게시판</NavLink>
-                    <NavLink to="/write">글쓰기</NavLink>
-                    <NavLink to="/login">로그인</NavLink>
+
+                    {/* 로그인 상태에 따라 다른 메뉴 표시 */}
+                    {isAuthenticated ? /* return 이 생략된 형태 */ (
+                        <>
+                            <NavLink to="/write">글쓰기</NavLink>
+                            <NavLink to="/mypage">마이페이지</NavLink>
+                            <span className="user-email">{user.memberEmail}</span>
+                        </>
+                    ) :
+                        (<NavLink to="/login">로그인</NavLink>)}
                 </div>
 
             </nav>
