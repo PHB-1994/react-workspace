@@ -103,7 +103,7 @@ const Login = () => {
                     navigate("/");
                 } else {
                     // 로그인 실패에 대한 메세지를 전달
-                    setMessage(result.messages);
+                    setMessage(result.message);
                 }
             })
         
