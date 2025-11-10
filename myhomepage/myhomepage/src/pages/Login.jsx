@@ -1,5 +1,6 @@
 // 로그인
 import {useState} from "react";
+import {Link} from "react-router-dom";
 
 const Login = () => {
     const [memberEmail, setMemberEmail] = useState('');
@@ -23,9 +24,25 @@ const Login = () => {
                                    placeholder="이메일을 입력하세요."
                                    value={}
                                    onChange={}
+                            />
                         </label>
                     </div>
+                    <div className="form-group">
+                        <label>비밀번호
+                            <input type="password"
+                                   id="memberPassword"
+                                   placeholder="비밀번호를 입력하세요."
+                                   value={}
+                                   onChange={}
+                            />
+                        </label>
+                    </div>
+                    {message && (<div className="error-message">{message}</div> )}
+                    <button className="button">로그인</button>
                 </form>
+                <div className="login-footer">
+                    <p>계정이 없으신가요?<Link to={"/signup"}> 회원가입</Link></p>
+                </div>
             </div>
         </div>
     );
