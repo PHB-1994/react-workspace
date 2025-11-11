@@ -56,11 +56,18 @@ const AuthProvider = ({children}) => {
                 // 2. 요청성공(200 ~ 299)
                 // 서버가 응답을 성공적으로 보냈을 때 실행
                 // setUser(res.data); // 로그인 성공 시 사용자에 대한 모든 정보 저장
-                setUser(res.data.user);
-                return{
-                    success : true,
-                    message : res.data.message
-                };
+                if(res.data.user) {
+                    setUser(res.data.user);
+                    return{
+                        success : true,
+                        message : res.data.message
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: res.data.message || '로그인 실패'
+                    }
+                }
             })
             .catch(err => {
                 console.error("로그인 에러 : ", err)
@@ -72,7 +79,7 @@ const AuthProvider = ({children}) => {
     };
 
     const logoutFn = () => {
-        axios.post(API_AUTH_URL + '/logout',
+        return axios.post(API_AUTH_URL + '/logout',
             {},{withCredentials:true})
             .then(res => {
                 console.log("로그아웃 응답 : ", res.data);
