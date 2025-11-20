@@ -27,6 +27,16 @@ const ToastProvider = ({children}) => {
                 const n = JSON.parse(msg.body);
                 console.log("✨✨✨✨ 받은 알림 ✨✨✨✨ : ", n);
                 // 알림 추가
+                /*
+                 setNotifications(p => {
+                        const newNotifications = [...p, {
+                            id:Date.now(),
+                            ...n,
+                            read:false
+                        }];
+                    return newNotifications;
+                    });
+                 */
                 setNotifications(p => [...p, {
                     id : Date.now(),
                     ...n,

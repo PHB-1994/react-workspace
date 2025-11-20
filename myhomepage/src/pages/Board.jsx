@@ -1,7 +1,7 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import "./boards.css";
-import {useNavigate} from "react-router-dom";
+import {Link, NavLink, useNavigate} from "react-router-dom";
 
 // 전체 게시판
 // 1. const Board = () => () -> {} 변경
@@ -43,7 +43,7 @@ const Board = () => {
             <div className="board-header">
                 <h1>게시판</h1>
                 <button className="button">
-                    글쓰기
+                    <NavLink to="/write">글쓰기</NavLink>
                 </button>
             </div>
 
