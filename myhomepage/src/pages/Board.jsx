@@ -84,7 +84,7 @@ const Board = () => {
                             <td>{b.title}</td>
                             <td>{b.writer}</td>
                             <td>{b.viewCount}</td>
-                            <td>{b.createdAt}</td> {/* 2025-11-07 11:56:00 -> 2025-11-07 */}
+                            <td>{b.createdAt}</td>{/* 2025-11-07 11:56:00 -> 2025-11-07 */}
                         </tr>
                 ))}
                 </tbody>
