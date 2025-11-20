@@ -104,7 +104,19 @@ const Signup = () => {
                 headers : {'Content-Type' : 'application/json'} // 글자형태로 전달 설정
                 }
         );
+        /*
+        @Override
+        public String sendMail(String htmlName, String email) {}
+        백엔드에서는 String 형태로 자료형을 반환하는데
+        비교는 int 형태로 되어 있어 결과값은 항상 false 가 나옴
+
         if(res.data == 1) {
+        */
+        // console.log("응답 데이터 : ", res.data);
+        console.log("응답 상태 : ", res.status);
+
+        // 과제 : if (r.data && r.data !== null) { -> 응답코드 1일 경우에만 인증되도록 수정 /////////////////////////////////////////////////////////////////
+        if(res.data && res.data !== null) {
             setMessage(prev => ({...prev,authKey: '05:00'}));
             setTimer({min:4, sec:59,active: true});
             alert('인증번호가 발송되었습니다.')
@@ -113,6 +125,55 @@ const Signup = () => {
         }
     };
 
+    // async = 중간에 기다림이 있어야 하는 기능입니다.
+    // 만약에 await 가 작성되어 있는 구문은 백엔드나 다른 api 에서 return 결과가 도착할 때 까지
+    // 하위 js 코드를 실행하지 않고 잠시 기다립니다.
+    // post 에서 url 과 data 는 필수. cookie 나 header 와 같은 속성전달은 선택사항
+    // post("url",{data}) 필수 형태
+    /*
+    * ==  동등 타입 변환 하며, 갑만 비교
+    * === 일치 타입 변환 안함, 값 + 타입 모두 비교
+    * */
+    const checkAuthKey = async () => {
+
+        if(timer.min === 0 && timer.sec === 0) {
+            alert("인증번호 입력 시간을 초과하였습니다.");
+            return
+        }
+
+        if(formData.authKey.length < 6 || formData.authKey.length > 6) {
+            alert("인증번호를 정확히 입력해주세요.");
+            return
+        }
+
+        try { // 프론트엔드에서 백엔드로 연결 시도
+            const r = await axios.post(
+                '/api/email/checkAuthKey',    // 1번 데이터 보낼 백엔드 api endpoint 작성
+                    {                        // 2번 어떤 데이터를 백엔드에 어떤 명칭으로 전달할 것인지 작성
+                    email : formData.memberEmail,
+                    authKey : formData.authKey
+                    }                             // header 에 글자형태만 전달한다, 이미지나 파일 데이터도 전달한다와 같은 구문을 작성해야할 경우 3번도 필요
+            );
+
+            // console.log("r.data : ", r.data);
+            // if 와 else 는 백엔드와 무사히 연결되었다는 전제하에
+            // 백엔드에서 특정 데이터의 성공 유무 확인
+            // 프론트엔드와 백엔드가 제대로 연결되어있는지 확인할 수 없다.
+            // 과제 : if (r.data && r.data !== null) { -> 응답코드 1일 경우에만 인증되도록 수정 /////////////////////////////////////////////////////////////////
+            if(r.data && r.data !== null) {
+                clearInterval(timerRef.current);
+                setTimer({min : 0, sec : 0, active: false});
+                setMessage(prev => ({...prev, authKey : '인증되었습니다.'}));
+                setCheckObj(prev => ({...prev, authKey: true}));
+                alert("인증이 완료되었습니다.");
+            } else {
+                alert("인증번호가 일치하지 않습니다.");
+                setCheckObj(prev => ({...prev, authKey: false}));
+            }
+        } catch (err){ // 백엔드 연결을 실패했을 경우
+            alert("인증 확인 중 서버에 연결되지 않은 오류가 발생했습니다.");
+        }
+    }
 
     // js 기능 추가
     /*
@@ -222,15 +283,38 @@ const Signup = () => {
 
             <label htmlFor="emailCheck">
                 <span className="required">*</span> 인증번호
+                <span className="signUp-message" id="authKeyMessage">
+                    {timer.active && (
+                        <span style={{color : 'red', fontWeight : 'bold'}}>
+                            {zeroPlus(timer.min)}:{zeroPlus(timer.sec)}
+                        </span>
+                    )}
+                    {!timer.active && message.authKey && (
+                        <span style={{color : checkObj ? 'green' : 'red'}}>
+                        {message.authKey}
+                        </span>
+                    )}
+                </span>
             </label>
 
             <div className="signUp-input-area">
-                <input type="text" name="authKey" id="authKey" placeholder="인증번호 입력" maxLength="6" autoComplete="off"/>
+                <input type="text"
+                       name="authKey"
+                       id="authKey"
+                       placeholder="인증번호 입력"
+                       value={formData.authKey}
+                       onChange={handleChange}
+                       maxLength="6"
+                       autoComplete="off"/>
 
-                <button id="checkAuthKeyBtn" type="button">인증하기</button>
+                <button id="checkAuthKeyBtn"
+                        type="button"
+                        onClick={checkAuthKey}>
+                    인증하기
+                </button>
             </div>
 
-            <span className="signUp-message" id="authKeyMessage"></span>
+
 
             <label htmlFor="memberPw">
                 <span className="required">*</span> 비밀번호

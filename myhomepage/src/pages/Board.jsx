@@ -77,18 +77,17 @@ const Board = () => {
                 1. 제목 클릭해도 게시물에 들어가도록 설정
                 2. 에러 해결
                 */}
+                <tbody>
                 {boards.map((b) => (
-                    <tbody onClick={() => handleIDClick(b.id)}>
-                        <tr key={b.id}>
+                        <tr onClick={() => handleIDClick(b.id)} key={b.id}>
                             <td>{b.id}</td>
                             <td>{b.title}</td>
                             <td>{b.writer}</td>
                             <td>{b.viewCount}</td>
                             <td>{b.createdAt}</td> {/* 2025-11-07 11:56:00 -> 2025-11-07 */}
                         </tr>
-                    </tbody>
                 ))}
-
+                </tbody>
             </table>
         </div>
     );
