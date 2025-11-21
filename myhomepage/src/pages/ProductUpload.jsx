@@ -50,9 +50,9 @@ const ProductUpload = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if(!validateForm()){
-            return;
-        }
+        // if(!validateForm()){
+        //     return;
+        // }
         setLoading(true);
 
         // 백엔드 연결 시도
@@ -128,19 +128,22 @@ const ProductUpload = () => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="category">
-                            상품코드<span className="required">*</span>
+                            카테고리<span className="required">*</span>
                         </label>
                         <select
                             id="category"
                             name="category"
                             value={product.category}
                             onChange={handleChange}>
-                            <option value="">카테고리를 선택하세요</option>
-                            {categories.map(category => {
-                                <option key={category} value={category}>{category}</option>
-                            })}
+                            <option value="">카테고리를 선택하세요.</option>
+                            {categories.map(category => (
+                                <option key={category}
+                                        value={category}>
+                                    {category}
+                                </option>
+                            ))}
                         </select>
-                        {errors.category && (
+                        {errors.category &&(
                             <span className="error">{errors.category}</span>
                         )}
                     </div>
