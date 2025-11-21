@@ -50,9 +50,11 @@ const ToastProvider = ({children}) => {
                 setNotifications(p => [...p, newNotification]);
 
                 // 5초 후 자동 삭제
+                /*
                 setTimeout(() => {
                     removeNotification(newNotification.id);
                 }, 5000);
+                */
             });
         };
         /*

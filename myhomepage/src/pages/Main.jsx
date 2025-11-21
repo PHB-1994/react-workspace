@@ -46,7 +46,7 @@ const Main = () => {
                     변수이름 상수이름 기능구현을 작성
                     */}
                     {boards.map((b => (
-                        <li>{b.title}</li>
+                        <li key={b.id}>{b.title}</li>
                     )))}
             </ul>
         </div>

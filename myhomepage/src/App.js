@@ -10,6 +10,7 @@ import './App.css';
 import BoardDetail from "./pages/BoardDetail";
 import {useAuth} from "./context/AuthContext";
 import NotificationToast from "./components/NotificationToast";
+import ProductUpload from "./pages/ProductUpload";
 // 단순히 가져와서 적용할 때는 from 생략
 // 1. 라우팅에 필요한 컴포넌트 임포트
 //    공통 스타일 임포트
@@ -21,15 +22,16 @@ function App() {
 
     // 로그아웃 처리 기능
     const handleLogout = () => {
-        logoutFn()
-            .then(
-                result => {
-                    if(result.success) {
-                        alert("로그아웃 되었습니다.")
+        logoutFn()                                      // AuthContext 에서 가져온 로그아웃 기능
+            .then(                                      // 로그아웃 백엔드 연결을 성공하고
+                result => {                             // 성공결과로
+                    if(result.success) {                // success 를 전달받으면
+                        alert("로그아웃 되었습니다.")    // 클라이언트에게 로그아웃되었음을 알림
                     }
                 }
             )
     }
+
     return (
         <div className="App">
             {/* 모든 곳에서 실시간 알림 토스트 */}
@@ -47,6 +49,8 @@ function App() {
                         <>
                             <NavLink to="/write">글쓰기</NavLink>
                             <NavLink to="/mypage">마이페이지</NavLink>
+                            <NavLink to="/upload">상품 업로드</NavLink>
+
                             <button onClick={handleLogout} className="logout-btn">로그아웃</button>
                             {/* /api/auth/check 에서 로그인 상태가 확인되어야지 표기 */}
                             <span className="user-email">{user?.memberEmail}</span>
@@ -66,6 +70,7 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/mypage" element={<MyPage />} />
                 <Route path="/write" element={<Write />} />
+                <Route path="/upload" element={<ProductUpload />} />
             </Routes>
 
             {/* 공통 푸터 - 모든 페이지에 보이는 footer 작성 */}
