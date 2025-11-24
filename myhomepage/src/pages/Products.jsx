@@ -1,9 +1,9 @@
 import {useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import axios from "axios";
 
-const Products = () => {
 
+const Products = () => {
     const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [filterProduct, setFilterProduct] = useState(null);
@@ -11,7 +11,8 @@ const Products = () => {
     const [selectCategory, setSelectCategory] = useState('전체');
     const [searchKeyword, setSearchKeyword] = useState('');
 
-    const categories = ["전체", "전자기기", "의류", "식품", "도서", "생활용품", "기타"];
+    const categories = ["전체","전자기기","의류","식품","도서","생활용품","기타"];
+
 
     useEffect(() => {
         fetchProduct();
@@ -22,29 +23,30 @@ const Products = () => {
     }, [selectCategory, searchKeyword, products]);
 
     const fetchProduct = async () => {
-        try{
-          const res = await axios.get("http://localhost:8085/api/product/all");
-          setProducts(res.data);
-          setFilterProduct(res.data);
-        } catch(err) {
+        try {
+            const res = await axios.get("http://localhost:8085/api/product/all");
+            setProducts(res.data);
+            setFilterProduct(res.data);
+        } catch (error) {
             alert("상품 목록을 불러올 수 없습니다.");
-        }finally {
+        } finally {
             setLoading(false);
         }
-    };
+    }
 
     const filterProducts = async () => {
         // products 를 spread 이용해서 배열 복제
-        let filterd = [];
+        let filtered = [];
 
         // 카테고리 필터
 
-        // 검색 필터 = 양옆 공백 제외
+        // 검색필터 = 양옆 공백제외
 
         // 카테고리나, 검색된 filtered 를 setter 이용해서 filterProduct 에 저장
+
     };
 
-    const handleSearch = (e) => {
+    const handleSearch = (e)=>{
         e.preventDefault();
         filterProducts();
     }
@@ -56,9 +58,8 @@ const Products = () => {
     const formatPrice = (price) => {
         return new Intl.NumberFormat("ko-KR").format(price);
     }
-
-    if(loading) {
-        return (
+    if(loading){
+        return(
             <div className="page-container">
                 <div className="loading-container">
                     <div className="loading-spinner">
@@ -68,9 +69,8 @@ const Products = () => {
             </div>
         );
     }
-
     return (
-        <div className="page-container">
+        <div className="page-container product-list-container">
             <div className="product-header">
                 <h2>상품 목록</h2>
                 <button className="btn-add-product"
@@ -79,45 +79,46 @@ const Products = () => {
                 </button>
             </div>
 
-
+            {/* 카테고리 필터 */}
             <div className="category-filter">
                 {categories.map((c) => (
                     <button
                         key={c}
-                        className={`category-btn ${selectCategory} === c ? "active" : ""`}
+                        className={`category-btn ${selectCategory} === c ? "active" : ""}`}
                         onClick={() => setSelectCategory(c)}>
                         {c}
                     </button>
                 ))}
             </div>
 
-            {/*검색 박스*/}
+            {/*  검색 박스  */}
             <form className="search-box" onSubmit={handleSearch}>
                 <input
                     type="text"
                     placeholder="상품명, 상품코드, 제조사로 검색"
                     value={searchKeyword}
-                    onChange={(e) => setSearchKeyword()}/>
+                    onChange={(e) => setSearchKeyword(e.target.value)}
+                />
                 <button>검색</button>
             </form>
 
-            {/*상품 개수*/}
+            {/* 상품 개수 */}
             <div className="product-count">
                 총 <strong>{filterProduct.length}</strong>개의 상품
             </div>
 
-            {/*상품 목록*/}
-            {filterProduct.length > 0 ? (
+            {/* 상품 목록*/}
+            {filterProduct.length > 0 ?(
                 <div className="product-grid">
-                    {filterProducts.map((product) =>
+                    {filterProduct.map((product) => (
                         <div key={product.id}
-                            className="product-card"
-                            onClick={() => handleProductClick(product.id)}>
+                             className="product-card"
+                             onClick={() => handleProductClick(product.id)}>
                             <div className="product-image">
                                 {product.imageUrl ? (
-                                    <img src={product.imageUrl} alt={product.productName}/>
+                                    <img src={product.imageUrl} alt={product.productName} />
                                 ) : (
-                                    <img src="/static/img/default.png" alt="default"/>
+                                    <img src="/static/img/default.png" alt="default" />
                                 )}
                             </div>
                             <div className="product-info">
@@ -135,19 +136,19 @@ const Products = () => {
                                     <span className="product-price">
                                         {formatPrice(product.price)}원
                                     </span>
-                                    <span className={`product-stock ${product.stock < 10 ? "매진임박" : ""}`}></span>
+                                    <span className={`product-stock ${product.stock < 10 ? "매진임박" :""}`}></span>
                                 </div>
                             </div>
                         </div>
-
-            )}
+                    ))}
                 </div>
-                ):(
+            ):(
                 <div className="no-products">
-                    <p>상품 목록이 없습니다.</p>
+                    <p>등록된 상품이 없습니다.</p>
                 </div>
+            )}
         </div>
-    );
-};
+    )
+}
 
-export default Products;
+export  default Products;
