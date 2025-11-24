@@ -32,7 +32,6 @@ const Board = () => {
             .catch(e => alert("데이터를 가져올 수 없습니다."))
     }, []);
 
-    // ㅇ
 
     const handleIDClick = (id) => {
         navigate(`/board/${id}`)

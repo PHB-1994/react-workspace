@@ -72,6 +72,7 @@ const Main = () => {
             </div>
         );
     }
+
     return(
         <div className="page-container">
             <h1>메인 페이지</h1>
@@ -142,7 +143,7 @@ const Main = () => {
                         ))}
                     </ul>
                 ): (
-                    <p className="no-data">인기글이 없습니다.</p>
+                    <p className="no-data">제품이 없습니다.</p>
                 )}
             </section>
 
