@@ -2,29 +2,30 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {fetchBoardDetail, renderLoading} from "../context/scripts";
+import {render} from "@testing-library/react";
 
 const BoardDetail = () => {
-
-    const {id} = useParams(); // URL 에서 id 가져오기
+    const {id} = useParams(); //URL 에서 id 가져오기
     const navigate = useNavigate();
     const [board, setBoard] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchBoardDetail(axios, id, setBoard, navigate);
-    }, [id, navigate]);
-
+    }, [id]);
 
     // 로딩중 일 때
-    if(loading) return renderLoading('게시물을 불러오는 중');
+    if(loading)  return renderLoading('게시물을 불러오는 중');
+
     if(!board) renderLoading('게시물을 찾을 수 없습니다.');
 
     return (
         <div className="page-container">
+            <h1 className="board-detail-title">{board.title}</h1>
             <div className="board-detail-info">
-                <span>작성자 : {board.writer} </span>
-                <span>조회수 : {board.viewCount} </span>
-                <span>작성일 : {board.createdAt} </span>
+                <span>작성자 : {board.writer}</span>
+                <span>조회수 : {board.viewCount}</span>
+                <span>작성일 : {board.createdAt}</span>
             </div>
             <div className="board-detail-content">
                 {board.content}
@@ -32,6 +33,7 @@ const BoardDetail = () => {
             <button className="button" onClick={() => navigate('/board')}>
                 목록으로
             </button>
+
         </div>
     );
 };

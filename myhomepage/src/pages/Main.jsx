@@ -2,20 +2,18 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import {fetchAllProducts, fetchPopularBoards} from "../context/scripts";
+import {fetchAllPopularBoards, fetchAllProducts} from "../context/scripts";
 
 const Main = () => {
     const navigate = useNavigate();
     const [boards, setBoards] = useState([]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
-
     // console.log 로  res.data 데이터를 조회 F12
     useEffect( () =>{
-        fetchPopularBoards(axios, setBoards);
-        fetchAllProducts(axios, setProducts);
+        fetchAllProducts(axios,setProducts);
+        fetchAllPopularBoards(axios, setBoards);
     },[]);
-
 
     // 오늘 날짜 포멧팅
     // react가 아닌
@@ -52,7 +50,6 @@ const Main = () => {
             </div>
         );
     }
-
     return(
         <div className="page-container">
             <h1>메인 페이지</h1>

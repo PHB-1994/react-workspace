@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import axios from "axios";
-import {fetchAllProducts, goToPage} from "../context/scripts";
+import {fetchAllProducts, goToPage, pageClickHandler} from "../context/scripts";
 
 
 const Products = () => {
@@ -21,6 +21,7 @@ const Products = () => {
 
     useEffect(() => {
         filterProducts();
+
     }, [selectCategory, searchKeyword, products]);
 
 
@@ -40,14 +41,13 @@ const Products = () => {
         e.preventDefault();
         filterProducts();
     }
-
     /*
     const handleProductClick = (id) => {
         navigate(`/product/${id}`);
     }
     */
     const handleProductClick = (id) => {
-        goToPage(navigate,`/product/${id}`);
+        goToPage(navigate,`/product/${id}`)
     }
 
 
@@ -55,15 +55,7 @@ const Products = () => {
         return new Intl.NumberFormat("ko-KR").format(price);
     }
     if(loading){
-        return(
-            <div className="page-container">
-                <div className="loading-container">
-                    <div className="loading-spinner">
-                        <p>로딩중</p>
-                    </div>
-                </div>
-            </div>
-        );
+
     }
     return (
         <div className="page-container product-list-container">
