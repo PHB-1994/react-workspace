@@ -37,6 +37,52 @@ export const withLoading = async (abc,setLoading) => {
     }
 }
 
+// ========== 네이게이트 관련 함수 ==========
+// 게시물 상세보기로 이동
+/*
+goToPage 하나면 navigateToBoard  navigateToProduct 필요하지 않는다.
+export const navigateToBoard = (navigate, boardId) => {
+    navigate(`/board/${boardId}`);
+}
+
+export const navigateToProduct = (navigate, productId) => {
+    navigate(`/product/${productId}`);
+}
+*/
+
+export const goToPage = (navigate, path) => {
+    navigate(path);
+}
+
+export const goBack = (navigate, confirmMessage = null) => {
+    if(confirmMessage) {
+        if(window.confirm(confirmMessage)) navigate(-1);
+    } else navigate(-1);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

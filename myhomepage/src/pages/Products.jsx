@@ -1,6 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import axios from "axios";
+import {goToPage} from "../context/scripts";
 
 
 const Products = () => {
@@ -51,9 +52,15 @@ const Products = () => {
         filterProducts();
     }
 
+    /*
     const handleProductClick = (id) => {
         navigate(`/product/${id}`);
     }
+    */
+    const handleProductClick = (id) => {
+        goToPage(navigate,`/product/${id}`);
+    }
+
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat("ko-KR").format(price);
