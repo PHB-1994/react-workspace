@@ -37,6 +37,7 @@ export const withLoading = async (abc,setLoading) => {
     }
 }
 
+
 // ========== 네이게이트 관련 함수 ==========
 // 게시물 상세보기로 이동
 /*
@@ -61,6 +62,82 @@ export const goBack = (navigate, confirmMessage = null) => {
 }
 
 
+// ========== API 데이터 패칭 관련 함수 ==========
+const API_URL = 'http://localhost:8085'
+export const API_URLS =  {
+    AUTH : `${API_URL}/api/auth`,
+    BOARD : `${API_URL}/api/board`,
+    PRODUCT : `${API_URL}/api/product`,
+    EMAIL : `${API_URL}/api/email`
+}
+
+export const fetchAllBoards = async (axios, setBoards, setLoading = null) => {
+    try{
+        const res = await axios.get(`${API_URLS.BOARD}/all`);
+        setBoards(res.data);
+    } catch (error) {
+        alert("데이터를 가져올 수 없습니다.");
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
+
+export const fetchPopularBoards = async (axios, setBoards, setLoading = null) => {
+    try{
+        const res = await axios.get(`${API_URLS.BOARD}/popular`);
+        setBoards(res.data);
+    } catch (error) {
+        alert("데이터를 가져올 수 없습니다.");
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
+
+export const fetchPopularProducts = async (axios, setProducts, setLoading = null) => {
+    try{
+        const res = await axios.get(`${API_URLS.PRODUCT}/all`);
+        setProducts(res.data);
+    } catch (error) {
+        alert("데이터를 가져올 수 없습니다.");
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
+
+export const fetchAllProducts = async (axios, setProducts, setLoading = null) => {
+    try{
+        const res = await axios.get(`${API_URLS.PRODUCT}/all`);
+        setProducts(res.data);
+    } catch (error) {
+        alert("데이터를 가져올 수 없습니다.");
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
+
+export const fetchProductDetail = async (axios, id, setProduct, navigate, setLoading = null) => {
+    try{
+        const res = await axios.get(`${API_URLS.PRODUCT}/${id}`);
+        setProduct(res.data);
+    } catch (error) {
+        alert("상품 정보를 불러올 수 없습니다.");
+        navigate("/products"); // App.js 에서 Route 내부에 작성한 프론트엔드 게시물 전체보는 경로 설정
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
+
+export const fetchBoardDetail = async (axios, id, setBoard, navigate, setLoading = null) => {
+    try{
+        const res = await axios.get(`${API_URLS.PRODUCT}/${id}`);
+        setBoard(res.data);
+    } catch (error) {
+        alert("상품 정보를 불러올 수 없습니다.");
+        navigate("/board"); // App.js 에서 Route 내부에 작성한 프론트엔드 게시물 전체보는 경로 설정
+    } finally {
+        if(setLoading) setLoading(false);
+    }
+}
 
 
 
@@ -76,19 +153,7 @@ export const goBack = (navigate, confirmMessage = null) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-// 네비게이트
 // fetchProduct
 // 날짜 포멧팅
-//
+// 가격 포멧팅
+// 카테고리

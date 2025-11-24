@@ -2,41 +2,21 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import {fetchAllProducts, fetchPopularBoards} from "../context/scripts";
 
 const Main = () => {
     const navigate = useNavigate();
     const [boards, setBoards] = useState([]);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+
     // console.log 로  res.data 데이터를 조회 F12
     useEffect( () =>{
-        fetchBoards();
-        fetchProducts();
+        fetchPopularBoards(axios, setBoards);
+        fetchAllProducts(axios, setProducts);
     },[]);
 
 
-    const fetchProducts = async () => {
-        try{
-            const r=  await  axios.get("http://localhost:8085/api/product/all");
-            console.log("productAll" , r.data);
-            setProducts(r.data);
-        } catch (err) {
-            alert("데이터를 백엔드에서 가져올 수 없습니다.")
-        }finally {
-            setLoading(false);
-        }
-    }
-
-    const fetchBoards = async () => {
-        try{
-            const r=  await  axios.get("http://localhost:8085/api/board/popular");
-            setBoards(r.data.slice(0, 6)); // 0 ~ 5 번 까지의 상품 가져오기
-        } catch (err) {
-            alert("데이터를 백엔드에서 가져올 수 없습니다.")
-        }finally {
-            setLoading(false);
-        }
-    }
     // 오늘 날짜 포멧팅
     // react가 아닌
     // javascript 에서 기본으로 사용할 수 있는 날짜 표현법

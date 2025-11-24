@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import axios from "axios";
-import {goToPage} from "../context/scripts";
+import {fetchAllProducts, goToPage} from "../context/scripts";
 
 
 const Products = () => {
@@ -16,24 +16,13 @@ const Products = () => {
 
 
     useEffect(() => {
-        fetchProduct();
+        fetchAllProducts(axios, setProducts);
     }, []);
 
     useEffect(() => {
         filterProducts();
     }, [selectCategory, searchKeyword, products]);
 
-    const fetchProduct = async () => {
-        try {
-            const res = await axios.get("http://localhost:8085/api/product/all");
-            setProducts(res.data);
-            setFilterProduct(res.data);
-        } catch (error) {
-            alert("상품 목록을 불러올 수 없습니다.");
-        } finally {
-            setLoading(false);
-        }
-    }
 
     const filterProducts = async () => {
         // products 를 spread 이용해서 배열 복제
