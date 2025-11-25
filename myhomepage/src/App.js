@@ -5,7 +5,7 @@ import Board from "./pages/Board";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import MyPage from "./pages/MyPage";
-import Write from "./pages/Write";
+import BoardWrite from "./pages/BoardWrite";
 import './App.css';
 import BoardDetail from "./pages/BoardDetail";
 import {useAuth} from "./context/AuthContext";
@@ -27,7 +27,7 @@ function App() {
         logoutFn()                                      // AuthContext 에서 가져온 로그아웃 기능
             .then(                                      // 로그아웃 백엔드 연결을 성공하고
                 result => {                             // 성공결과로
-                    if(result.success) {                // success 를 전달받으면
+                    if (result.success) {                // success 를 전달받으면
                         alert("로그아웃 되었습니다.")    // 클라이언트에게 로그아웃되었음을 알림
                     }
                 }
@@ -37,7 +37,7 @@ function App() {
     return (
         <div className="App">
             {/* 모든 곳에서 실시간 알림 토스트 */}
-            <NotificationToast />
+            <NotificationToast/>
             {/* --- 5. 공통 내비게이션 바 --- */}
             <nav className="navbar">
                 <Link to="/" className="logo">myhomepage</Link>
@@ -58,24 +58,23 @@ function App() {
                             {/* /api/auth/check 에서 로그인 상태가 확인되어야지 표기 */}
                             <span className="user-email">{user?.memberEmail}</span>
                         </>
-                    ) :   ( <NavLink to="/login">로그인</NavLink>)
+                    ) : (<NavLink to="/login">로그인</NavLink>)
                     }
-
                 </div>
             </nav>
 
             {/* --- 6. 페이지가 렌더링될 영역 --- */}
             <Routes>
-                <Route path="/" element={<Main />} />
-                <Route path="/board" element={<Board />} />
-                <Route path="/board/:id" element={<BoardDetail />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/mypage" element={<MyPage />} />
-                <Route path="/write" element={<Write />} />
-                <Route path="/upload" element={<ProductUpload />} />
-                <Route path="/products" element={<Products />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/" element={<Main/>}/>
+                <Route path="/board" element={<Board/>}/>
+                <Route path="/board/:id" element={<BoardDetail/>}/>
+                <Route path="/signup" element={<Signup/>}/>
+                <Route path="/login" element={<Login/>}/>
+                <Route path="/mypage" element={<MyPage/>}/>
+                <Route path="/write" element={<BoardWrite/>}/>
+                <Route path="/upload" element={<ProductUpload/>}/>
+                <Route path="/products" element={<Products/>}/>
+                <Route path="/product/:id" element={<ProductDetail/>}/>
             </Routes>
 
             {/* 공통 푸터 - 모든 페이지에 보이는 footer 작성 */}

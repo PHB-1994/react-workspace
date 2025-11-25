@@ -1,4 +1,3 @@
-
 // jsx 가 아니라 js 인 이유
 // ui 적으로 클라이언트 화면에 보여주는 것이 아니라
 // 인증에 관련된 기능 구현이기 때문에
@@ -33,13 +32,13 @@ const AuthProvider = ({children}) => {
     const checkLoginStatus = () => {
         // 로그인 상태 확인 기능 만들기
         axios.get(API_AUTH_URL + "/check",
-            {withCredentials:true})
+            {withCredentials: true})
             .then(res => {
                 // console.log("로그인 상태 확인 응답 : ", res.data);
 
                 setUser(res.data.user);
             })
-            .catch( err => {
+            .catch(err => {
                 console.log("로그인 상태 확인 오류 : ", err);
                 setUser(null);
             })
@@ -48,18 +47,18 @@ const AuthProvider = ({children}) => {
 
     const loginFn = (memberEmail, memberPassword) => {
         return axios.post(API_AUTH_URL + '/login',
-            {memberEmail,memberPassword},
-            {withCredentials:true}) // session 유지를 위한 쿠키 전송
+            {memberEmail, memberPassword},
+            {withCredentials: true}) // session 유지를 위한 쿠키 전송
             .then(
                 res => {
-                    if(res.data.success && res.data.user) {
-                    // 2. 요청성공(200 ~ 299)
-                    // 서버가 응답을 성공적으로 보냈을 때 실행
-                    // setUser(res.data); // 로그인 성공 시 사용자에 대한 모든 정보 저장
+                    if (res.data.success && res.data.user) {
+                        // 2. 요청성공(200 ~ 299)
+                        // 서버가 응답을 성공적으로 보냈을 때 실행
+                        // setUser(res.data); // 로그인 성공 시 사용자에 대한 모든 정보 저장
                         setUser(res.data.user);
-                        return{
-                            success : true,
-                            message : res.data.message
+                        return {
+                            success: true,
+                            message: res.data.message
                         };
                     } else {
                         return {
@@ -67,28 +66,28 @@ const AuthProvider = ({children}) => {
                             message: res.data.message || '로그인 실패'
                         }
                     }
-            })
+                })
             .catch(err => {
                 console.error("로그인 에러 : ", err)
                 return {
-                    success : false,
-                    message : '로그인 중 오류가 발생했습니다.'
+                    success: false,
+                    message: '로그인 중 오류가 발생했습니다.'
                 };
             });
     };
 
     const logoutFn = () => {
         return axios.post(API_AUTH_URL + '/logout',
-            {},{withCredentials:true})
+            {}, {withCredentials: true})
             .then(res => {
                 console.log("로그아웃 응답 : ", res.data);
                 setUser(null); // 사용자 정보 초기화
                 return {
-                    success : true
+                    success: true
                 }
             })
             .catch(err => {
-                console.log("로그아웃 에러 : " , err)
+                console.log("로그아웃 에러 : ", err)
                 return {success: false};
             });
     }
@@ -100,11 +99,11 @@ const AuthProvider = ({children}) => {
         loginFn,                       // 로그인 함수
         logoutFn,                    // 로그아웃 함수
         // isAuthenticated:!user   // 로그인 여부(true / false) 제공될 것
-        isAuthenticated:!!user   // 로그인 여부(true / false) 제공될 것
+        isAuthenticated: !!user   // 로그인 여부(true / false) 제공될 것
     };
 
     return (
-        <AuthContext.Provider value = {value}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     )

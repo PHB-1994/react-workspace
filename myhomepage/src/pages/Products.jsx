@@ -1,8 +1,9 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useMemo, useState} from "react";
 import axios from "axios";
-import {fetchAllProducts, goToPage, pageClickHandler} from "../context/scripts";
+import {fetchAllProducts, formatPrice, goToPage, renderNoData} from "../context/scripts";
 
+// ctrl + alt + l -> 코드 정렬 단축키
 
 const Products = () => {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Products = () => {
     const [selectCategory, setSelectCategory] = useState('전체');
     const [searchKeyword, setSearchKeyword] = useState('');
 
-    const categories = ["전체","전자기기","의류","식품","도서","생활용품","기타"];
+    const categories = ["전체", "전자기기", "의류", "식품", "도서", "생활용품", "기타"];
 
 
     useEffect(() => {
@@ -40,7 +41,7 @@ const Products = () => {
 
     };
 
-    const handleSearch = (e)=>{
+    const handleSearch = (e) => {
         e.preventDefault();
         filterProducts();
     }
@@ -50,14 +51,11 @@ const Products = () => {
     }
     */
     const handleProductClick = (id) => {
-        goToPage(navigate,`/product/${id}`)
+        goToPage(navigate, `/product/${id}`)
     }
 
 
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat("ko-KR").format(price);
-    }
-    if(loading){
+    if (loading) {
 
     }
     return (
@@ -99,7 +97,7 @@ const Products = () => {
             </div>
 
             {/* 상품 목록*/}
-            {filterProduct.length > 0 ?(
+            {filterProduct.length > 0 ? (
                 <div className="product-grid">
                     {filterProduct.map((product) => (
                         <div key={product.id}
@@ -107,9 +105,9 @@ const Products = () => {
                              onClick={() => handleProductClick(product.id)}>
                             <div className="product-image">
                                 {product.imageUrl ? (
-                                    <img src={product.imageUrl} alt={product.productName} />
+                                    <img src={product.imageUrl} alt={product.productName}/>
                                 ) : (
-                                    <img src="/static/img/default.png" alt="default" />
+                                    <img src="/static/img/default.png" alt="default"/>
                                 )}
                             </div>
                             <div className="product-info">
@@ -127,19 +125,23 @@ const Products = () => {
                                     <span className="product-price">
                                         {formatPrice(product.price)}원
                                     </span>
-                                    <span className={`product-stock ${product.stock < 10 ? "매진임박" :""}`}></span>
+                                    <span
+                                        className={`product-stock ${product.stockQuantity < 10 ? "매진임박" : ""}`}></span>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
-            ):(
-                <div className="no-products">
-                    <p>등록된 상품이 없습니다.</p>
-                </div>
-            )}
+            ) : renderNoData('상품이 존재하지 않습니다.')
+            }
+            {/*
+            {} 자체가 js 기능들을 모두 쓴다는 표기
+            {} 내부에 ui 를 작성할 경우 return 을 생략한 () 가 필요함
+            renderNoData() 에서 이미 () 형태로 ui 를 작성했기 때문에
+            굳이 한 번 더 () 를 작성해서 renderNoData() 를 작성할 필요가 없다.
+            */}
         </div>
     )
 }
 
-export  default Products;
+export default Products;
