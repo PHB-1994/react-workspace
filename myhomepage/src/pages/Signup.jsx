@@ -1,7 +1,7 @@
 // 회원가입
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import {handleInputChange} from "../context/scripts";
+import {fetchSignup, handleInputChange} from "../service/ApiService";
 
 const Signup = () => {
 
@@ -196,54 +196,8 @@ const Signup = () => {
     * */
     const handleSubmit = async (e) => {
         // 제출 관련 기능 설정
-        e.preventDefault(); // 제출 일시 정시
-
-        // 필수 항목 체크
-        if(!formData.memberName) {
-            alert('이름을 입력해주세요');
-            return; // 돌려보내기 하위기능 작동 X
-        }
-
-        // DB 에 저장할 데이터만 전송
-        // body 형태로 전달하기
-        // requestBody requestParam
-        //     body      header
-
-        const signupData = {
-            memberName : formData.memberName,
-            memberEmail : formData.memberEmail,
-            memberPassword : formData.memberPw
-        }
-
-        // axios.post
-        // 백엔드는 무사히 저장되지만 프론트엔드에서 회원가입 실패가 뜬다.
-        // 이를 해결하자
-        // 비동기 vs 동기 무조건 알고 있기
-        // async - await : 백엔드 작업이 끝날때까지 기다린 후
-        // 회원가입 결과 여부 확인
-        // 아래 코드는 백엔드 응답을 기다리지 않고 바로 확인해서 회원가입 실패가 뜸
-        /*
-        const res =  axios.post("/api/auth/signup",signupData);
-
-        if(res.data === "success" || res.status === 200) {
-            alert("회원가입이 완료되었습니다.");
-        } else {
-            alert("회원가입에 실패했습니다.");
-        }
-         */
-        //  post : url, data 필수로 작성
-        // get : url 만 필수 ,data 선택
-        const res = await axios.post("/api/auth/signup",signupData);
-
-        if(res.data === "success" || res.status === 200) {
-            console.log("res.status : ", res.status);
-            console.log("res.data : ", res.data);
-            alert("회원가입이 완료되었습니다.");
-            window.location.href = "/";
-        } else if (res.data === "duplicate")
-         alert("이미 가입된 이메일입니다.");
-         else alert("회원가입에 실패했습니다.");
-
+        e.preventDefault();
+        await fetchSignup(axios, formData);
     }
 
     const handleChange = (e) => {

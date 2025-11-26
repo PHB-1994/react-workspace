@@ -10,7 +10,7 @@ import {useAuth} from "../context/AuthContext";
 // default Export = AuthContext
 //         export = {useAuth} 사용할 수 있다.
 import {useNavigate} from "react-router-dom";
-import {renderLoading} from "../context/scripts";
+import {renderLoading} from "../service/ApiService";
 
 
 const MyPage = () => {

@@ -1,7 +1,8 @@
 import {useNavigate} from "react-router-dom";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useAuth} from "../context/AuthContext";
-import {handleChange, handleInputChange} from "../context/scripts";
+import {fetchMypageEdit, handleInputChange} from "../service/ApiService";
+import axios from "axios";
 /*
 과제 1: 새로 작성한 비밀번호와 비밀번호 확인이 일치하는지 여부 기능 완성
 과제 2: 핸드폰번호 css 다른 input 창과 동일하게 스타일 작성
@@ -42,12 +43,17 @@ const MyPageEdit = () => {
     const navigate = useNavigate();
     const {user, isAuthenticated} = useAuth();
 
+    useEffect(() => {
+        if (!isAuthenticated) navigate("/login");
+    }, []);
+
     const [formData, setFormData] = useState({
         memberName: '',
         memberEmail: '',
         memberPhone: '',
         memberPostCode: '',
         memberAddress: '',
+        memberDetailAddress: '',
         newPassword: '',
         currentPassword: '',
         confirmPassword: '',
@@ -66,34 +72,76 @@ const MyPageEdit = () => {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // set 해서 값을 추가하면서 추가된 값이 일치하는가 확인
+    // handleInputChange 내부에 formData 활용
+    // formData 에 내장된 새 비밀번호와 비밀번호 확인이 일치하는지 체크
+    const handleCheckChange = (e) => {
+        const {name, value} = e.target;
+        handleInputChange(e, setFormData);
+
+        /**
+         * 새 비밀번호 입력하고 비밀번호 확인까지 입력
+         * 그 후에 새 비밀번호를 변경할 수 있는 가능성이 있기 때문에
+         * 새 비밀번호 = 비밀번호 확인 일치하는지 체크 후
+         * 새 비밀번호 변경하면 비밀번호 확인까지 같이 변경할 수 있도록 세팅
+         */
+        // 새 비밀번호 입력 시 -> 비밀번호 확인과 비교
+        if (name === "newPassword") {
+            const isMatch = value === formData.confirmPassword;
+
+            setValidation(prev => ({
+                ...prev,
+                confirmPassword: isMatch
+            }));
+
+            setMessages(prev => ({
+                ...prev,
+                confirmPassword: formData.confirmPassword
+                    ? (isMatch ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다.")
+                    : ""
+            }));
+        }
+
+        if (name === "confirmPassword") {
+            const isMatch = value === formData.newPassword;
+            setValidation(prev => ({
+                ...prev,
+                confirmPassword: isMatch
+            }));
+
+            setMessages(prev => ({
+                ...prev,
+                confirmPassword: value
+                    ? (isMatch ? "비밀번호가 일치합니다." : "비밀번호가 일치하지 않습니다.")
+                    : ""
+            }));
+        }
+    }
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if(formData.currentPassword || formData.newPassword || formData.confirmPassword) {
-            if(!formData.currentPassword){
+        // 단순히 값을 존재하는지 확인 값이 존재하면 ok
+        if (formData.currentPassword || formData.newPassword || formData.confirmPassword) {
+            if (!formData.currentPassword) {
                 alert("현재 비밀번호를 입력해주세요.");
                 return;
             }
-            if(!validation.newPassword){
-                alert("비밀번호 형식이 올바르지 않습니다.");
+
+            if (!validation.newPassword) {
+                alert("새 비밀번호를 입력해주세요.");
                 return;
             }
-            if(!validation.confirmPassword){
-                alert("비밀번호가 일치하지 않습니다.");
+            if (!validation.confirmPassword) {
+                alert("비밀번호 확인을 입력해주세요.");
                 return;
             }
         }
-        setIsSubmitting(true);
-
-        setTimeout(() => {
-            setIsSubmitting(false);
-            alert("회원정보가 수정되었습닌다.");
-            navigate("/mypage");
-        }, 1000);
+        fetchMypageEdit(axios, formData, navigate, setIsSubmitting);
     }
     /*
     업로드, 업데이트와 같은 모든 사이트에서 활용하는 공통 기능
-    scripts.js 이동하여 상태 관리를 진행하고, 재사용
+    commonService.js 이동하여 상태 관리를 진행하고, 재사용
     const handleChange = (e) => {
         const {name, value} = e.target;
         setFormData(p => ({
@@ -102,10 +150,6 @@ const MyPageEdit = () => {
         }))
     }
      */
-    const handleCheckChange = (e) => {
-        // const {name, value} = e.target;
-        handleInputChange(e, setFormData);
-    }
 
     const handleAddressSearch = () => {
         new window.daum.Postcode({
@@ -113,7 +157,7 @@ const MyPageEdit = () => {
                 var addr = '';
 
                 // 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
-                if( data.userSelectedType === 'R') { //사용자가 도로명 주소를 사용할 경우 Road
+                if (data.userSelectedType === 'R') { //사용자가 도로명 주소를 사용할 경우 Road
                     addr = data.roadAddress;
                 } else { // === 'J' Jibun 을 선택했을 경우 지번주소를 가져온다.
                     addr = data.jibunAddress;
@@ -121,8 +165,8 @@ const MyPageEdit = () => {
 
                 setFormData(p => ({
                     ...p,
-                    memberPostCode : data.zonecode,
-                    memberAddress : addr
+                    memberPostCode: data.zonecode,
+                    memberAddress: addr
                 }))
 
                 /*
@@ -142,7 +186,7 @@ const MyPageEdit = () => {
     // 게시물 작성, 수정, 상품 업로드 작성, 수정, 마이페이지 수정 동시 사용
     // 인자값 msg, navigate path
     const handleCancel = () => {
-        if(window.confirm("수정을 취소하시겠습니까? 변경사항이 저장되지 않습니다.")){
+        if (window.confirm("수정을 취소하시겠습니까? 변경사항이 저장되지 않습니다.")) {
             navigate("/mypage");
         }
     };
@@ -186,7 +230,7 @@ const MyPageEdit = () => {
                 </label>
                 <label>
                     <span className="required">*</span>현재 비밀번호
-                    <input type="text"
+                    <input type="password"
                            name="currentPassword"
                            value={formData.currentPassword}
                            onChange={handleCheckChange}
@@ -195,7 +239,7 @@ const MyPageEdit = () => {
                 </label>
                 <label>
                     <span className="required">*</span>새 비밀번호
-                    <input type="text"
+                    <input type="password"
                            name="newPassword"
                            value={formData.newPassword}
                            onChange={handleCheckChange}
@@ -209,7 +253,8 @@ const MyPageEdit = () => {
                            value={formData.confirmPassword}
                            onChange={handleCheckChange}
                     />
-                    <span className={`signUp-message ${validation.confirmPassword && formData.confirmPassword ? 'confirm' :'error' } `}>
+                    <span
+                        className={`signUp-message ${validation.confirmPassword && formData.confirmPassword ? 'confirm' : 'error'} `}>
                         {messages.confirmPassword}
                     </span>
                 </label>
@@ -237,7 +282,7 @@ const MyPageEdit = () => {
                                value={formData.memberAddress}
                                placeholder="도로명/지번 주소"
                                onClick={handleAddressSearch}
-                               readOnly />
+                               readOnly/>
                     </div>
                     <div className="signUp-input-area">
                         <input type="text"

@@ -5,8 +5,12 @@
 
 // 기능을 나눌 때 여러 ui 태그에서 반복적으로 사용하는 기능인가?
 /***********************************************************
-                로딩 관련 함수
+ 로딩 관련 함수
  ***********************************************************/
+
+
+import axios from "axios";
+
 /**
  * 로딩상태 ui 컴포넌트 함수
  * @param message 초기값은 로딩중
@@ -39,7 +43,7 @@ export const renderNoData = (message = '데이터가 없습니다.') => {
 
 
 /***********************************************************
-                네이게이트 관련 함수
+ 네이게이트 관련 함수
  ***********************************************************/
 /*
 goToPage 하나면 navigateToBoard navigateToProduct 필요하지 않는다.
@@ -65,7 +69,7 @@ export const goToPage = (navigate, path) => {
 
 
 /***********************************************************
-                 API 관련 함수
+ API 관련 함수
  ***********************************************************/
 /*
 const API_URL 의 경우 내부에서만 사용할 수 있도록 설정된 상태
@@ -86,7 +90,114 @@ export const API_URLS = {
 }
 
 /***********************************************************
-                제품 백엔드 관련 함수
+ 유저 백엔드 관련 함수
+ ***********************************************************/
+// 회원가입        = fetchSignup
+// 로그인          = fetchLogin --> auth 로 작성
+// 로그인 상태 유무 확인 = fetchLoginCheck(기존에 작성한 이름 존재한다면 기존 이름 그대로 사용)
+// 마이페이지 조회 = fetchMypage -->
+// 마이페이지 수정 = fetchMypageEdit
+
+export const fetchSignup = async (axios, formData) => {
+    // 필수 항목 체크
+    if (!formData.memberName) {
+        alert('이름을 입력해주세요');
+        return; // 돌려보내기 하위기능 작동 X
+    }
+
+    // DB 에 저장할 데이터만 전송
+    // body 형태로 전달하기
+    // requestBody requestParam
+    //     body      header
+    const signupData = {
+        memberName: formData.memberName,
+        memberEmail: formData.memberEmail,
+        memberPassword: formData.memberPw,
+    }
+
+    try {
+        const res = await axios.post("/api/auth/signup", signupData);
+
+        if (res.data === "success" || res.status === 200) {
+            console.log("res.status : ", res.status);
+            console.log("res.data : ", res.data);
+            alert("회원가입이 완료되었습니다.");
+            window.location.href = "/";
+        } else if (res.data === "duplicate")
+            alert("이미 가입된 이메일입니다.");
+        else alert("회원가입에 실패했습니다.");
+    } catch (err) {
+        alert("회원가입 중 문제가 발생했습니다.");
+        console.error(err);
+    }
+
+    // axios.post
+    // 백엔드는 무사히 저장되지만 프론트엔드에서 회원가입 실패가 뜬다.
+    // 이를 해결하자
+    // 비동기 vs 동기 무조건 알고 있기
+    // async - await : 백엔드 작업이 끝날때까지 기다린 후
+    // 회원가입 결과 여부 확인
+    // 아래 코드는 백엔드 응답을 기다리지 않고 바로 확인해서 회원가입 실패가 뜸
+    /*
+    const res =  axios.post("/api/auth/signup",signupData);
+
+    if(res.data === "success" || res.status === 200) {
+        alert("회원가입이 완료되었습니다.");
+    } else {
+        alert("회원가입에 실패했습니다.");
+    }
+     */
+}
+
+export const fetchLoginCheck = (axios, setUser, setLoading) => {
+    // 로그인 상태 확인 기능 만들기
+    axios.get(API_URLS.AUTH + "/check",
+        {withCredentials: true})
+        .then(res => {
+            // console.log("로그인 상태 확인 응답 : ", res.data);
+
+            setUser(res.data.user);
+        })
+        .catch(err => {
+            console.log("로그인 상태 확인 오류 : ", err);
+            setUser(null);
+        })
+        .finally(() => setLoading(false));
+}
+
+export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
+    // 수정내용 키:데이터 를 모두 담아갈 변수이름
+    const update = {
+        memberName: formData.memberName,
+        memberEmail: formData.memberEmail,
+        memberPhone: formData.memberPhone,
+        memberAddress: formData.memberAddress + formData.memberDetailAddress,
+        newPassword: formData.newPassword || null,
+        currentPassword: formData.currentPassword || null,
+    }
+
+    try {
+        const res = axios.put(API_URLS.AUTH + "/update", update);
+
+        if (res.data === "success" || res.status === 200) {
+            alert("회원정보가 수정되었습니다.");
+        } else if(res.data === "wrongPassword") {
+            alert("현재 비밀번호가 일치하지 않습니다.");
+        } else {
+            alert("회원정보 수정에 실패했습니다.");
+        }
+
+    } catch (err) {
+        alert("회원정보 수정 중 문제가 발생했습니다.");
+
+    } finally {
+        setIsSubmitting(false);
+    }
+}
+
+
+/***********************************************************
+ 제품 백엔드 관련 함수
  ***********************************************************/
 /**
  * get : 제품 전체 데이터 가져오는 함수
@@ -147,7 +258,7 @@ export const deleteProduct = async (axios, id, navigate) => {
 }
 
 /***********************************************************
-                게시물 백엔드 관련 함수
+ 게시물 백엔드 관련 함수
  ***********************************************************/
 /**
  * get : 게시물 전체 데이터 가져오는 함수
@@ -232,8 +343,8 @@ export const boardSave = (axios, formData, navigate) => {
 
 
 /***********************************************************
-            날짜 시간 가격 포멧팅
-***********************************************************/
+ 날짜 시간 가격 포멧팅
+ ***********************************************************/
 /**
  * 날짜 포멧팅 함수
  * @param dateString 백엔드로 가져오거나, 작성해놓은 특정 날짜 데이터 매개변수 = 인자값으로 가져오기
@@ -273,8 +384,12 @@ export const formatPrice = (price) => {
  * @logic p =>({...p, [name]: value}) 기존에 존재하던 formData 를 p 변수이름 내부에 그대로 복제하여 담아둔 후
  * 변화가 감지된 키의 데이터를 p 변수에 추가하고, 키 명칭이 존재한다면 데이터 수정, 키 명칭이 존재하지 않는다면 키:데이터 형태로 추가
  * 변화된 p 전체 데이터는 setter 를 이용해서 formData 에 저장
+ * @id        js 상태관리 할 때 주로 사용
+ * @name      백엔드로 데이터를 주고 받을 때 사용
+ * @className 스타일 세팅 사용
  */
 export const handleInputChange = (e, setFormData) => {
+    // id 키 명칭에 해당하는 데이터를 갖고오길 원한다면 name 대신 id 활용
     const {name, value} = e.target;
     setFormData(p => ({
         ...p,
@@ -284,18 +399,18 @@ export const handleInputChange = (e, setFormData) => {
 
 
 /***********************************************************
-                    유효성 검사 함수
+ 유효성 검사 함수
  ***********************************************************/
-const regexPw= /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+const regexPw = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 const regexPhone = /^01[0-9]{8,9}$/;
 
-const validatePassword = (password) => {
-    if(!password) return true; // 비밀번호가 존재하지 않는게 맞다면 유효성 검사 하지 않음
+export const validatePassword = (password) => {
+    if (!password) return true; // 비밀번호가 존재하지 않는게 맞다면 유효성 검사 하지 않음
     return regexPw.test(password);
 }
 
-const validatePhone = (phone) => {
-    if(!phone) return true; // 비밀번호가 존재하지 않는게 맞다면 유효성 검사 하지 않음
+export const validatePhone = (phone) => {
+    if (!phone) return true; // 전화번호가 존재하지 않는게 맞다면 유효성 검사 하지 않음
     return regexPhone.test(phone);
 }
 
