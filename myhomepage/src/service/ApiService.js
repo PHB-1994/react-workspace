@@ -116,16 +116,19 @@ export const fetchSignup = async (axios, formData) => {
     }
 
     try {
-        const res = await axios.post("/api/auth/signup", signupData);
+        const res = await axios.post(API_URLS.AUTH + "/signup", signupData);
 
         if (res.data === "success" || res.status === 200) {
             console.log("res.status : ", res.status);
             console.log("res.data : ", res.data);
             alert("회원가입이 완료되었습니다.");
             window.location.href = "/";
+
         } else if (res.data === "duplicate")
             alert("이미 가입된 이메일입니다.");
+
         else alert("회원가입에 실패했습니다.");
+
     } catch (err) {
         alert("회원가입 중 문제가 발생했습니다.");
         console.error(err);
@@ -197,8 +200,8 @@ export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
 
 
 /***********************************************************
- 제품 백엔드 관련 함수
- ***********************************************************/
+                    제품 백엔드 관련 함수
+***********************************************************/
 /**
  * get : 제품 전체 데이터 가져오는 함수
  * @param axios             fetch 향상된 기능으로 백엔드 연결 시 사용
