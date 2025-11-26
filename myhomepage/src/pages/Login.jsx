@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
 import {useAuth} from "../context/AuthContext";
+import {handleInputChange} from "../context/scripts";
 
 // 게시물이나, 회원가입에서 사용하는 방식
 // 단순 로그인과 비밀번 찾기, 아이디찾기에서는 지양하는 방식
@@ -33,12 +34,7 @@ const LoginHandleChangeVersion = () => {
     }
 
     const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormData(기존데이터 => ({
-            ...기존데이터, [name] : value // [name] 은 memberEmail 또는 memberPassword 가 된다.
-        }))
-        // 기존에 formData 에 내장되어 있는 name 에 해당하는 데이터를 클라이언트가 작성한대로 ...복사하여
-        // 덮어쓸 키의 name 과 데이터를 저장
+        handleInputChange(e, setFormData);
     }
 
     return (
@@ -86,6 +82,11 @@ const Login = () => {
     const [memberPassword, setMemberPassword] = useState('');
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const handleChange = (e) => {
+        // setFormData 로 변경해서 전달하기 생각만
+        handleInputChange(e);
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();

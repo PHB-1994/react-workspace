@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {NavLink, useNavigate} from "react-router-dom";
-import {boardSave} from "../context/scripts";
+import {boardSave, handleInputChange} from "../context/scripts";
 import {useAuth} from "../context/AuthContext";
 import "../App.css";
 /*
@@ -59,11 +59,7 @@ const BoardWrite = () => {
 
 
     const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormData(p => ({
-            ...p, [name]: value
-        }))
-
+        handleInputChange(e, setFormData);
     }
 
     const handleCancel = () => {

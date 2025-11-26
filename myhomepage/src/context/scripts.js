@@ -75,10 +75,7 @@ export const API_URLS 의 경우 외부 내부 어디서든 활용 가능하도�
 export 를 제거한다.
 */
 const API_URL = 'http://localhost:8085'
-/**
- *
- * @type {{AUTH: string, BOARD: string, PRODUCT: string, EMAIL: string}}
- */
+
 export const API_URLS = {
     AUTH: `${API_URL}/api/auth`,
     BOARD: `${API_URL}/api/board`,
@@ -221,6 +218,11 @@ export const fetchBoardDetail = async (axios, id, setBoard, navigate, setLoading
 
 
 // 세원 : 날짜포멧팅
+/**
+ *
+ * @param dateString
+ * @returns {string}
+ */
 export const formatDate = (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
@@ -238,6 +240,21 @@ export const formatDate = (dateString) => {
  */
 export const formatPrice = (price) => {
     return new Intl.NumberFormat("ko-KR").format(price);
+}
+
+
+export const handleInputChange = (e, setFormData) => {
+    const {name, value} = e.target;
+    setFormData(p => ({
+        ...p,
+        [name]: value
+        // p 기존의 name 과 name 에 해당하는 value 데이터 보유한 변수이름
+        // ...p : 기존 name 키 value 데이터의 값에
+        //  , [name] : value 이벤트가 감지된 name 의 value 값으로
+        //             데이터를 수정해서 추가하거나
+        //             없던 키-값을 추가해서
+        // formData 변수일므에 setter 로 저장
+    }))
 }
 
 

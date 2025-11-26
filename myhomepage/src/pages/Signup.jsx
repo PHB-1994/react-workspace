@@ -1,6 +1,7 @@
 // 회원가입
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
+import {handleInputChange} from "../context/scripts";
 
 const Signup = () => {
 
@@ -246,16 +247,8 @@ const Signup = () => {
     }
 
     const handleChange = (e) => {
-        const {name, value} = e.target;
-        setFormData(p => ({
-            // p 기존의 name 과 name 에 해당하는 value 데이터 보유한 변수이름
-            // ...p : 기존 name 키 value 데이터의 값에
-            //  , [name] : value 이벤트가 감지된 name 의 value 값으로
-            //             데이터를 수정해서 추가하거나
-            //             없던 키-값을 추가해서
-            // formData 변수일므에 setter 로 저장
-            ...p, [name] : value
-        }))
+        handleInputChange(e, setFormData);
+        // 개발자가 원하는 정규식이나, 입력 형식에 일치하게 작성했는지 체크
     }
 
     return(

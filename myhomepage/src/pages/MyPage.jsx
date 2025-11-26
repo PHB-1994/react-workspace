@@ -57,8 +57,8 @@ const MyPage = () => {
                         </div>
 
                         <div className="info-item">
-                            <span className="info-label">닉네임</span>
-                            <span className="info-value">{user.memberNickname || '-'}</span>
+                            <span className="info-label">이름</span>
+                            <span className="info-value">{user.memberName || '-'}</span>
                         </div>
 
                         <div className="info-item">
@@ -81,7 +81,10 @@ const MyPage = () => {
                         <div className="info-item">
                             <span className="info-label">가입일</span>
                             <span className="info-value">
-                                {user.createdAt ? new Date(user.createdAt).toLocaleDateString('ko-KR') : '-'}
+                                {user.memberCreatedAt ?
+                                    new Date(user.memberCreatedAt).toLocaleDateString('ko-KR')
+                                    :
+                                    '-'}
                             </span>
                         </div>
                     </div>
