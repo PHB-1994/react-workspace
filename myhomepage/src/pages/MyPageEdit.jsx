@@ -69,6 +69,27 @@ const MyPageEdit = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        if(formData.currentPassword || formData.newPassword || formData.confirmPassword) {
+            if(!formData.currentPassword){
+                alert("현재 비밀번호를 입력해주세요.");
+                return;
+            }
+            if(!validation.newPassword){
+                alert("비밀번호 형식이 올바르지 않습니다.");
+                return;
+            }
+            if(!validation.confirmPassword){
+                alert("비밀번호가 일치하지 않습니다.");
+                return;
+            }
+        }
+        setIsSubmitting(true);
+
+        setTimeout(() => {
+            setIsSubmitting(false);
+            alert("회원정보가 수정되었습닌다.");
+            navigate("/mypage");
+        }, 1000);
     }
     /*
     업로드, 업데이트와 같은 모든 사이트에서 활용하는 공통 기능
