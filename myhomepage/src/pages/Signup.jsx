@@ -1,7 +1,7 @@
 // 회원가입
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import {fetchSignup, handleInputChange} from "../service/ApiService";
+import {fetchSignup, formatDate, handleInputChange} from "../service/ApiService";
 
 const Signup = () => {
 
@@ -95,9 +95,13 @@ const Signup = () => {
     // 인증키 관련된 백엔드 기능을 수행하고, 수행한 결과를 표기하기 위하여
     // 백엔드가 실행되고, 실행된 결과를 res.status 형태로 반환하기 전까지 js 하위기능 잠시 멈춤 처리
     const sendAuthKey = async () => {
+        if(!formData.memberEmail || !formData.memberEmail.trim().length === 0) {
+            alert("이메일을 작성해주세요");
+            return;
+        }
         // 기존 인증실패해서 0분 0초인 상태를 4분 59초 형태로 변환하기
         clearInterval(timerRef.current);
-        setTimer({min : 4, sec : 59, active : false});
+        setTimer({min : 4, sec : 59, active : true});
         // 백엔드 응답 결과를 res 라는 변수이름에 담아두기
         const res = await axios.post('/api/email/signup',
                 formData.memberEmail, // form 데이터에서 email 전달
@@ -117,9 +121,9 @@ const Signup = () => {
         console.log("응답 상태 : ", res.status);
 
         // 과제 : if (r.data && r.data !== null) { -> 응답코드 1일 경우에만 인증되도록 수정 /////////////////////////////////////////////////////////////////
-        if(res.data && res.data !== null) {
+        if(res.data === 1) {
             setMessage(prev => ({...prev,authKey: '05:00'}));
-            setTimer({min:4, sec:59,active: true});
+            // setTimer({min:4, sec:59,active: true});
             alert('인증번호가 발송되었습니다.')
         } else {
             alert('인증번호 발송 중 오류가 발생했습니다.');
@@ -148,6 +152,8 @@ const Signup = () => {
         }
 
         try { // 프론트엔드에서 백엔드로 연결 시도
+            console.log("이메일 : ", formData.memberEmail);
+            console.log("인증키 : ", formData.authKey);
             const r = await axios.post(
                 '/api/email/checkAuthKey',    // 1번 데이터 보낼 백엔드 api endpoint 작성
                     {                        // 2번 어떤 데이터를 백엔드에 어떤 명칭으로 전달할 것인지 작성
@@ -161,7 +167,8 @@ const Signup = () => {
             // 백엔드에서 특정 데이터의 성공 유무 확인
             // 프론트엔드와 백엔드가 제대로 연결되어있는지 확인할 수 없다.
             // 과제 : if (r.data && r.data !== null) { -> 응답코드 1일 경우에만 인증되도록 수정 /////////////////////////////////////////////////////////////////
-            if(r.data && r.data !== null) {
+            // if(r.data.success === true) {
+            if(r.data === 1) {
                 clearInterval(timerRef.current);
                 setTimer({min : 0, sec : 0, active: false});
                 setMessage(prev => ({...prev, authKey : '인증되었습니다.'}));
@@ -172,6 +179,7 @@ const Signup = () => {
                 setCheckObj(prev => ({...prev, authKey: false}));
             }
         } catch (err){ // 백엔드 연결을 실패했을 경우
+            console.log("인증 확인 실패 : ", err);
             alert("인증 확인 중 서버에 연결되지 않은 오류가 발생했습니다.");
         }
     }

@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useAuth} from "../context/AuthContext";
 import {fetchMypageEdit, handleInputChange} from "../service/ApiService";
 import axios from "axios";
@@ -42,9 +42,13 @@ document.querySelector("#searchAddress").addEventListener("click",daumPostCode);
 const MyPageEdit = () => {
     const navigate = useNavigate();
     const {user, isAuthenticated} = useAuth();
+    // 페이지 리랜더링이 될 때 현재 데이터를 그대로 유지하기 위해 사용
+    // 새로고침 되어도 초기값으로 돌아가는 것이 아니라 현재 상태를 그대로 유지
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         if (!isAuthenticated) navigate("/login");
+        console.log("isAuthenticated : ", isAuthenticated);
     }, []);
 
     const [formData, setFormData] = useState({
@@ -58,7 +62,9 @@ const MyPageEdit = () => {
         currentPassword: '',
         confirmPassword: '',
     })
-
+    const [profileImage, setProfileImage] = useState(user?.memberProfileImage || '/static/img/profile/default_profile_image.svg');
+    const [profileFile, setProfileFile] = useState(null);
+    const [isUploading, setUploading] = useState(false);
     const [validation, setValidation] = useState({
         memberPhone: true,
         newPassword: true,
@@ -69,7 +75,6 @@ const MyPageEdit = () => {
         newPassword: '',
         confirmPassword: '',
     })
-
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // set 해서 값을 추가하면서 추가된 값이 일치하는가 확인
@@ -190,10 +195,89 @@ const MyPageEdit = () => {
             navigate("/mypage");
         }
     };
+
+    // 프로필 이미지 선택 시 파일 선택
+    const handleProfileClick = () => {
+        fileInputRef.current?.click();
+        // 새로고침하여, 프로필이미지 초기화 되는 것이 아니라, 현재 상태를 유지한 채로 클릭을 진행한다.
+    }
+
+    // 프로필 이미지 파일 선택
+    const handleProfileChange = async (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+
+        // 이미지 파일인지 확인
+        if(!file.type.startsWith("image/")) {
+            alert("이미지 파일만 업로드 가능합니다.");
+            return;
+        }
+
+        // 파일 크기 확인 (5MB)
+        if(file.size > 5 * 1024 * 1024) {
+            alert("파일 크기는 5MB 를 초과할 수 없습니다.");
+            return;
+        }
+
+        // 미리보기 표기
+        const reader = new FileReader();
+        reader.onloadend = (e) => {
+            setProfileImage(e.target.result);
+        };
+        reader.readAsDataURL(file);
+        // 파일 저장
+        setProfileFile(file);
+        await uploadProfileImage(file);
+    }
+
+    const uploadProfileImage = async (file) => {
+        setUploading(true);
+        try {
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("memberEmail", user.memberEmail);
+            const res = await axios.post('/api/member/profile-image', formData, {
+                headers : {
+                    'Content-Type' : 'multipart/form-data'
+                }
+            });
+
+            if(res.data.success === true) {
+                alert("프로필 이미지 업데이트 되었습니다.");
+                setProfileImage(res.data.imageUrl);
+                // updateUser(useAuth 또한 업데이트 진행)
+            }
+
+        } catch(error) {
+            alert(error);
+            // 실패 시 원래 이미지로 복구
+            setProfileImage(user?.memberProfileImage || 'static/img/profile/default_profile_images.svg');
+        } finally {
+            setUploading(false);
+        }
+    }
+
     return (
         <div className="page-container">
             <h1>회원정보 수정</h1>
             <form onSubmit={handleSubmit}>
+                <div className="profile-image-section">
+                    <label>프로필 이미지</label>
+                    <div className="profile-image-container" onClick={handleProfileClick}>
+                        <img src={profileImage}
+                             className="profile-image"
+                        />
+                        <div className="profile-image-overlay">
+                            {isUploading ? "업로드 중..." : "이미지 변경"}
+                        </div>
+                    </div>
+                    <input type="file"
+                           ref={fileInputRef}
+                           onChange={handleProfileChange}
+                           accept="image/*"
+                            style={{display : 'none'}}/>
+                    <span className="form-hint">이미지를 클릭하여 변경할 수 있습니다.(최대 5MB)</span>
+                </div>
                 {/* 이름 / 이메일 ( 읽기 전용) 수정 불가 */}
                 <label>
                     <span className="required">*</span>이름
