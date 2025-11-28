@@ -2,15 +2,29 @@
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {fetchSignup, formatDate, handleInputChange} from "../service/ApiService";
+/********************************
+ 과제 1 번 :
+ Mypage 에서 회원가입 수정 들어가지 않고, 프로플 이미지 보여주기
+
+ 과제 2번 :
+ MypageEdit 에서 수정하기 버튼을 눌렀을 때도 프로필 이미지 수정하기
+
+ 과제 3번 :
+ 회원가입 할 때 프로필 이미지 선택 여부 / 선택 안할 경우 기본 이미지로 회원가입되게 설정
+********************************/
 
 const Signup = () => {
+    const fileInputRef = useRef(null);
+    const [profileImage, setProfileImage] = useState( '/static/img/profile/default_profile_image.svg');
+    const [isUploading, setIsUploading] = useState(false);
 
     const [formData , setFormData] = useState({
         memberName : '',
         memberEmail : '',
         memberPw : '',
         memberPwConfirm : '',
-        authKey : ''
+        authKey : '',
+        memberProfileImage: ''
         /* 집주소, 전화번호 추가 예정 */
     })
 
@@ -95,7 +109,7 @@ const Signup = () => {
     // 인증키 관련된 백엔드 기능을 수행하고, 수행한 결과를 표기하기 위하여
     // 백엔드가 실행되고, 실행된 결과를 res.status 형태로 반환하기 전까지 js 하위기능 잠시 멈춤 처리
     const sendAuthKey = async () => {
-        if(!formData.memberEmail || !formData.memberEmail.trim().length === 0) {
+        if(!formData.memberEmail || formData.memberEmail.trim().length == 0) {
             alert("이메일을 작성해주세요");
             return;
         }
@@ -212,6 +226,33 @@ const Signup = () => {
         handleInputChange(e, setFormData);
         // 개발자가 원하는 정규식이나, 입력 형식에 일치하게 작성했는지 체크
     }
+
+    const uploadProfileImage = async (file) => {
+        setIsUploading(true);
+        try {
+            const uploadFormData = new FormData();
+            uploadFormData.append("file", file);
+            const res = await axios.post('/api/auth/profile-image', uploadFormData, {
+                headers : {
+                    'Content-Type' : 'multipart/form-data'
+                }
+            });
+
+            if(res.data.success === true) {
+                alert("이미지가 업로드 되었습니다.");
+                setProfileImage(res.data.imageUrl);
+
+            }
+
+        } catch(error) {
+            alert(error);
+            // 실패 시 원래 이미지로 복구
+            setProfileImage('static/img/profile/default_profile_images.svg');
+        } finally {
+            setIsUploading(false);
+        }
+    }
+
 
     return(
     <div className="page-container">
@@ -335,6 +376,17 @@ const Signup = () => {
 
             <div className="signUp-input-area">
                 <input type="text" name="memberAddress" placeholder="상세 주소" id="detailAddress"/>
+            </div>
+
+            <div className="profile-image-section">
+                <label>프로필 이미지 첨부</label>
+                <input type="file"
+                       ref={fileInputRef}
+                       onChange={uploadProfileImage}
+                       accept="image/*"
+                       multiple
+                />
+                <span className="form-hint">이미지 파일을 넣어주세요. (최대 5MB) 선택을 안할 시 기본이미지로 적용됩니다.</span>
             </div>
 
             <button id="signUpBtn">가입하기</button>

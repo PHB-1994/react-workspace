@@ -84,12 +84,17 @@ const AuthProvider = ({children}) => {
             });
     }
 
+    const updateUser = (userData) => {
+        setUser(userData);
+    } 
+    
     // context 에 제공할 값들
     const value = {
         user,                            // 현재 로그인 한 사용자 정보
         loading,                        // 로딩 상태
         loginFn,                       // 로그인 함수
         logoutFn,                    // 로그아웃 함수
+        updateUser,                 // 업데이트 된 유저 내용 반영
         // isAuthenticated:!user   // 로그인 여부(true / false) 제공될 것
         isAuthenticated: !!user   // 로그인 여부(true / false) 제공될 것
     };
