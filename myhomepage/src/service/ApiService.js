@@ -45,16 +45,17 @@ export const fetchSignup = async (axios, formData, profileImage) => {
         memberEmail: formData.memberEmail,
         memberPassword: formData.memberPw,
     }
-    if(profileImage) {
-        signupData.appent('profileImage', profileImage);
+
+    if(profileImage){
+        signupData.append('profileImage', profileImage)
     }
 
     try {
-        const res = await axios.post(API_URLS.AUTH + "/signup", signupData, {
-            headers : {
-                'Content-Type' : 'multipart/form-data'
-            }
-        });
+        const res = await axios.post(API_URLS.AUTH + "/signup", signupData,
+            {headers: {
+                'Content-Type':'multipart/form-data'
+            }}
+        );
         if (res.data === "success" || res.status === 200) {
             console.log("res.data   : ", res.data);
             console.log("res.status : ", res.status);
