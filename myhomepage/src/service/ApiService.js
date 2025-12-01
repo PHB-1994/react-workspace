@@ -173,7 +173,7 @@ export const fetchLoginCheck = (axios, setUser, setLoading) => {
 
 export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
     // 수정내용 키:데이터 를 모두 담아갈 변수이름
-    const update = {
+    const updateData = {
         memberName: formData.memberName,
         memberEmail: formData.memberEmail,
         memberPhone: formData.memberPhone,
@@ -185,7 +185,7 @@ export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
     console.log("setIsSubmitting : ", setIsSubmitting);
 
     try {
-        const res = axios.put(API_URLS.AUTH + "/update", update);
+        const res = axios.put(API_URLS.AUTH + "/update", updateData);
 
         console.log("res.data : ", res.data);
 
@@ -211,7 +211,7 @@ export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
 
 export const fetchMypageEditWithProfile = (axios, formData, profileFile, navigate, setIsSubmitting) => {
     // 수정내용 키:데이터 를 모두 담아갈 변수이름
-    const update = {
+    const updateData = {
         memberName: formData.memberName,
         memberEmail: formData.memberEmail,
         memberPhone: formData.memberPhone,
@@ -222,8 +222,8 @@ export const fetchMypageEditWithProfile = (axios, formData, profileFile, navigat
     }
 
     try {
-        const res = axios.put(API_URLS.AUTH + "/update", update, {
-            header: {
+        const res = axios.put(API_URLS.AUTH + "/update", updateData, {
+            headers: {
                 'Content-Type' : 'multipart/form-data'
             },
             withCredentials:true
