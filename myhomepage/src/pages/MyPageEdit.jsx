@@ -3,6 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import {useAuth} from "../context/AuthContext";
 import {fetchMypageEditWithProfile, fetchMypageEdit, handleInputChange} from "../service/ApiService";
 import axios from "axios";
+import {getProfileImageUrl} from "../service/ApiService";
 /*
 과제 1: 새로 작성한 비밀번호와 비밀번호 확인이 일치하는지 여부 기능 완성
 과제 2: 핸드폰번호 css 다른 input 창과 동일하게 스타일 작성
@@ -40,16 +41,13 @@ document.querySelector("#searchAddress").addEventListener("click",daumPostCode);
             </div>
 */
 const MyPageEdit = () => {
+
     const navigate = useNavigate();
-    const {user, isAuthenticated, updateUser} = useAuth();
+    const {user, isAuthenticated, updateUser, loading} = useAuth();
+    console.log("user : ", user);
     // 페이지 리랜더링이 될 때 현재 데이터를 그대로 유지하기 위해 사용
     // 새로고침 되어도 초기값으로 돌아가는 것이 아니라 현재 상태를 그대로 유지
     const fileInputRef = useRef(null);
-
-    useEffect(() => {
-        if (!isAuthenticated) navigate("/login");
-        console.log("isAuthenticated : ", isAuthenticated);
-    }, []);
 
     const [formData, setFormData] = useState({
         memberName: '',
@@ -77,6 +75,27 @@ const MyPageEdit = () => {
         confirmPassword: '',
     })
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        if (!loading && !isAuthenticated) navigate("/login");
+    }, [loading, isAuthenticated, navigate]);
+
+    useEffect(() => {
+        if(user) {
+            setFormData(prev => ({
+                ...prev,
+                memberName: user.memberName || '',
+                memberEmail: user.memberEmail || '',
+                memberPhone: user.memberPhone || '',
+                memberAddress: user.memberAddress || ''
+            }));
+            // 프로필 이미지 설정
+            setProfileImage(getProfileImageUrl(user));
+        }
+    }, [user?.memberEmail]); // user.memberEmail 이 변경될 때만 실행
+
+
+
 
     // set 해서 값을 추가하면서 추가된 값이 일치하는가 확인
     // handleInputChange 내부에 formData 활용

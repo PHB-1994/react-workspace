@@ -10,7 +10,7 @@ import {useAuth} from "../context/AuthContext";
 // default Export = AuthContext
 //         export = {useAuth} 사용할 수 있다.
 import {useNavigate} from "react-router-dom";
-import {renderLoading} from "../service/ApiService";
+import {API_URLS, getProfileImageUrl, renderLoading} from "../service/ApiService";
 import axios from "axios";
 
 
@@ -46,21 +46,6 @@ const MyPage = () => {
 
     const handleClick = () => {
         navigate("/mypage/edit");
-    }
-
-    // 이미지 url 생성 함수
-    const getProfileImageUrl = () => {
-        if(!user?.memberProfileImage) return '/static/img/profile/default_profile_image.svg'
-
-        // memberProfileImage 가 전체 URL 인 경우
-        if(user.memberProfileImage.startsWith('http')) return user.memberProfileImage;
-
-        if(user.memberProfileImage.startsWith('/profile-images/')) {
-            return `http://localhost:8085/${user.memberProfileImage}`;
-        }
-
-        // 파일명만 있는 경우
-        return `http://localhost:8085${user.memberProfileImage}`;
     }
 
     const handleProfileClick = () => {
@@ -166,7 +151,7 @@ const MyPage = () => {
                         <div className="info-item">
                             <span className="info-label">프로필 이미지</span>
                             {/* 이미지 경로는 존재하지만 이미지 경로에 이미지가 존재하지 않을 경우 */}
-                            <img src={getProfileImageUrl() || '/static/img/profile/default_profile_image.svg'} />
+                            <img src={getProfileImageUrl(user) || '/static/img/profile/default_profile_image.svg'} />
                         </div>
 
                         <div className="info-item">
