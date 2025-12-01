@@ -1,7 +1,8 @@
 import {useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import {useAuth} from "../context/AuthContext";
-import {fetchMypageEditWithProfile, fetchMypageEdit, handleInputChange} from "../service/ApiService";
+import {fetchMypageEditWithProfile, fetchMypageEdit} from "../service/ApiService";
+import {handleInputChange} from "../service/commonService";
 import axios from "axios";
 import {getProfileImageUrl} from "../service/ApiService";
 /*

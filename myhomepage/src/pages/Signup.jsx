@@ -1,7 +1,8 @@
 // 회원가입
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
-import {fetchSignup, formatDate, handleInputChange} from "../service/ApiService";
+import {fetchSignup} from "../service/ApiService";
+import {formatDate, handleInputChange} from "../service/commonService";
 /********************************
  과제 1 번 :
  Mypage 에서 회원가입 수정 들어가지 않고, 프로플 이미지 보여주기

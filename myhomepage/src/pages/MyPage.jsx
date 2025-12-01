@@ -10,7 +10,8 @@ import {useAuth} from "../context/AuthContext";
 // default Export = AuthContext
 //         export = {useAuth} 사용할 수 있다.
 import {useNavigate} from "react-router-dom";
-import {API_URLS, getProfileImageUrl, renderLoading} from "../service/ApiService";
+import {getProfileImageUrl} from "../service/ApiService";
+import {API_URLS, renderLoading} from "../service/commonService";
 import axios from "axios";
 
 

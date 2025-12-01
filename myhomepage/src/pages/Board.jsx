@@ -10,7 +10,8 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import {fetchAllBoards, goToPage, renderLoading} from "../service/ApiService";
+import {fetchAllBoards} from "../service/ApiService";
+import {goToPage, renderLoading} from "../service/commonService";
 
 const Board = () => {
     const navigate = useNavigate();
