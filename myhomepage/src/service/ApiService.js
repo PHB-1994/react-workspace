@@ -79,7 +79,7 @@ export const fetchLoginCheck = (axios, setUser, setLoading) => {
         .finally(() => setLoading(false))
 }
 
-export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
+export const fetchMypageEdit = async (axios, formData, navigate, setIsSubmitting) => {
     // 수정내용 키:데이터를 모두 담아갈 변수이름
     const updateData = {
         memberName: formData.memberName,
@@ -90,7 +90,9 @@ export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
         currentPassword: formData.currentPassword || null,
     }
     try {
-        const res = axios.put(API_URLS.AUTH + "/update", updateData);
+        const res = await axios.put(API_URLS.AUTH + "/update", updateData);
+        console.log("res.data : ", res.data);
+
         if (res.data === "success" || res.status === 200) {
             alert("회원정보가 수정되었습니다.")
         } else if(res.data ==="wrongPassword"){
@@ -174,7 +176,7 @@ export const fetchAllProducts = async (axios, setProducts, setLoading = null) =>
  * @param axios             fetch 향상된 기능으로 백엔드 연결 시 사용
  * @param id                url 주소에 표기된 id = 제품번호를 이용해서 특정 제품번호의 전체 데이터를 가져올 수 있도록 활용
  * @param setProduct        매개변수에서는 데이터가 존재하지 않은 비어있는 변수명칭으로, res.data
- *                          백엔드 데이터를 ui 컴포넌트로 가져가서 활용하는데 쓰임
+ *                          백엔드 데이터를 ui 컴포넌트0로 가져가서 활용하는데 쓰임
  * @param navigate          특정 제품번호의 제품이 존재하지 않을 경우 제품목록 페이지로 이동시킨다.
  * @param setLoading        백엔드 데이터를 가져오기 전까지 로딩중 표기
  * @returns {Promise<void>} 백엔드 데이터를 제대로 가져왔는지에 대한 유무를 통하여 결과를 반환한다.
