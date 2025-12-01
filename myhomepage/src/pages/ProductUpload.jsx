@@ -1,12 +1,18 @@
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import axios from "axios";
-import {handleInputChange} from "../service/ApiService";
+import {handleInputChange} from "../service/commonService";
 
-
+// 상품 이미지 업로드
+// profileImage -> imageUrl 을 이용해서 상품 업로드 시 제품 미리보기
+{/*
+과제 1 : 상품 업로드를 진행할 때, 선택한 이미지 미리보기 설정
+const handleChangeImage = () => {}
+*/}
 const ProductUpload = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
     const [product, setProduct] = useState({
         productName : '',
         productCode : '',
@@ -19,6 +25,9 @@ const ProductUpload = () => {
     })
 
     const [errors, setErrors] = useState({});
+    const [productImage, setProductImage] = useState(product?.imageUrl || 'static/img/default.png');
+    const productInputRef = useRef(null);
+    const [isUploading, setIsUploading] = useState(false);
 
     const categories = [
         '전자제품', '가전제품', '의류', '식품', '도서', '악세사리', '스포츠', '완구', '가구', '기타'
@@ -83,6 +92,67 @@ const ProductUpload = () => {
         if(window.confirm("작성 중인 내용이 사라집니다. 작성을 취소하시겠습니까?")) {
             navigate("/");
         }
+    }
+
+    const handleProductImage = async (e) => {
+        const file = e.target.files[0];
+
+        if(!file) return;
+
+        if(!file.type.startsWith("image/")) {
+            alert("이미지 파일만 업로드 가능합니다.");
+            return;
+        }
+
+        // 파일 크기 확인 (5MB)
+        if(file.size > 10 * 1024 * 1024) {
+            alert("파일 크기는 5MB 를 초과할 수 없습니다.");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = (e) => {
+            setProductImage(e.target.result);
+        }
+        reader.readAsDataURL(file)
+        setProductImage(file);
+        await uploadProductImage(file)
+    }
+
+    const uploadProductImage = async (file) => {
+        setIsUploading(true);
+
+        try {
+            const uploadFormData = new FormData();
+            uploadFormData.append("file", file);
+            uploadFormData.append("productName", product.productName);
+
+            const res = await axios.post('/api/product/product-image', uploadFormData, {
+                headers : {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            console.log("res.data.success : ", res.data.success);
+
+            if (res.data.success === true) {
+                alert("상품 이미지가 등록되었습니다.");
+                setProductImage(res.data.imageUrl);
+            }
+
+        } catch(error) {
+            alert(error);
+            // 실패 시 원래 이미지로 복구
+            setProductImage(product?.imageUrl || 'static/img/default.png');
+        } finally {
+            setIsUploading(false);
+        }
+
+    }
+
+    const handleProductClick = () => {
+        productInputRef.current?.click();
+        // 새로고침하여, 프로필이미지 초기화 되는 것이 아니라, 현재 상태를 유지한 채로 클릭을 진행한다.
     }
 
     return (
@@ -184,7 +254,7 @@ const ProductUpload = () => {
                     </div>
                     <div className="form-group">
                         <label htmlFor="manufacturer">
-                            재고수량
+                            재조사
                         </label>
                         <input
                             type="text"
@@ -196,22 +266,28 @@ const ProductUpload = () => {
                             maxLength="100"
                         />
                     </div>
-                    <div className="form-group">
+
+
+                    <div className="form-group" >
                         <label htmlFor="imageUrl">
                             이미지 URL
                         </label>
-                        <input
-                            type="url"
-                            id="imageUrl"
-                            name="imageUrl"
-                            value={product.imageUrl}
-                            onChange={handleChange}
-                            maxLength="500"
-                        />
-                        <small className="form-hint">
-                            상품 이미지의 URL 을 입력하세요.
-                        </small>
+                        <div onClick={handleProductClick}>
+                            <img src={productImage}
+                                 className="product-image"/>
+                        </div>
+                        <div className="profile-image-overlay">
+                            {isUploading ? "업로드 중..." : "이미지 변경"}
+                        </div>
+                        <input type="file"
+                               ref={productInputRef}
+                               onChange={handleProductImage}
+                               accept="image/*"
+                               style={{display : 'none'}}/>
+                        <span className="form-hint">이미지를 클릭하여 변경할 수 있습니다.(최대 10MB)</span>
                     </div>
+
+
                     <div className="form-group">
                         <label htmlFor="description">
                             상품설명

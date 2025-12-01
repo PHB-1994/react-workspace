@@ -40,14 +40,25 @@ export const fetchSignup = async (axios, formData, profileImage) => {
     // body 형태로 전달하기
     // requestBody requestParam
     //    body         header
-    const signupData = {
+    // const signupData = {
+    //     memberName: formData.memberName,
+    //     memberEmail: formData.memberEmail,
+    //     memberPassword: formData.memberPw,
+    // }
+    //
+    // if(profileImage){
+    //     signupData.append('profileImage', profileImage)
+    // }
+
+    const signupData = new FormData();
+    signupData.append('member', new Blob([JSON.stringify({
         memberName: formData.memberName,
         memberEmail: formData.memberEmail,
-        memberPassword: formData.memberPw,
-    }
+        memberPassword: formData.memberPw
+    })], { type: "application/json" }));
 
-    if(profileImage){
-        signupData.append('profileImage', profileImage)
+    if (profileImage) {
+        signupData.append('memberProfileImage', profileImage);
     }
 
     try {
@@ -94,7 +105,9 @@ export const fetchMypageEdit = async (axios, formData, navigate, setIsSubmitting
         memberName: formData.memberName,
         memberEmail: formData.memberEmail,
         memberPhone: formData.memberPhone,
-        memberAddress: formData.memberAddress + formData.memberDetailAddress,
+        memberPostCode: formData.memberPostCode,
+        memberAddress: formData.memberAddress,
+        memberDetailAddress : formData.memberDetailAddress,
         newPassword: formData.newPassword || null,
         currentPassword: formData.currentPassword || null,
     }
