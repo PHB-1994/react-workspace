@@ -50,6 +50,8 @@ export const fetchSignup = async (axios, formData, profileImage) => {
     //     signupData.append('profileImage', profileImage)
     // }
 
+    // console.log("signupData : ", signupData);
+
     const signupData = new FormData();
     signupData.append('member', new Blob([JSON.stringify({
         memberName: formData.memberName,
@@ -57,8 +59,9 @@ export const fetchSignup = async (axios, formData, profileImage) => {
         memberPassword: formData.memberPw
     })], { type: "application/json" }));
 
+
     if (profileImage) {
-        signupData.append('memberProfileImage', profileImage);
+        signupData.append('profileImage', profileImage);
     }
 
     try {
