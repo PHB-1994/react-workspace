@@ -11,6 +11,8 @@
 
 import axios from "axios";
 
+axios.defaults.withCredentials = true;
+
 /**
  * 로딩상태 ui 컴포넌트 함수
  * @param message 초기값은 로딩중
@@ -180,8 +182,12 @@ export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
         currentPassword: formData.currentPassword || null,
     }
 
+    console.log("setIsSubmitting : ", setIsSubmitting);
+
     try {
         const res = axios.put(API_URLS.AUTH + "/update", update);
+
+        console.log("res.data : ", res.data);
 
         if (res.data === "success" || res.status === 200) {
             alert("회원정보가 수정되었습니다.");
@@ -197,6 +203,9 @@ export const fetchMypageEdit = (axios, formData, navigate, setIsSubmitting) => {
     } finally {
         setIsSubmitting(false);
     }
+
+    console.log("setIsSubmitting : ", setIsSubmitting);
+
 }
 
 
