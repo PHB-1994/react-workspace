@@ -98,7 +98,7 @@ const Main = () => {
                                         <img src={p.imageUrl} alt={p.productName}
                                              onError={(e) => {
                                                  e.target.onerror = null;
-                                                 e.target.src = "상품이 존재하지 않을 경우 기본 이미지 url 작성"
+                                                 e.target.src = "/static/img/default.png"
                                              }}
                                         />
                                     ) : (
