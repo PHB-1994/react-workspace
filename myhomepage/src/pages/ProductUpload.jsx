@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router-dom";
-import {useRef, useState} from "react";
+import {useState} from "react";
 import axios from "axios";
 import {handleInputChange} from "../service/commonService";
 
@@ -24,14 +24,73 @@ const ProductUpload = () => {
         imageUrl : '',
     })
 
+    // formData 변수 생성
+    const [formData, setFormData] = useState({
+        productName : '',
+        productCode : '',
+        category : '',
+        price : '',
+        stockQuantity : '',
+        description : '',
+        manufacturer : '',
+    })
+
+    const [imageFile, setImageFile] = useState(null);
+
     const [errors, setErrors] = useState({});
-    const [productImage, setProductImage] = useState(product?.imageUrl || 'static/img/default.png');
-    const productInputRef = useRef(null);
-    const [isUploading, setIsUploading] = useState(false);
+
+    // 이미지 미리보기를 위한 state 추가
+    const [previewImage, setPreviewImage] = useState(null);
 
     const categories = [
         '전자제품', '가전제품', '의류', '식품', '도서', '악세사리', '스포츠', '완구', '가구', '기타'
     ]
+
+
+    const handleChangeImage = (e) => {
+        // type = file 은 이미지 이외에도 항시 1개 이상의 데이터를 가져온다.
+        // 가 기본 전제로 된 속성으로 multipart 를 작성하지 않아
+        // input 에서 하나의 이미지만 가져온다 하더라도 항시 [0] 번째의
+        // 데이터를 가져온다로 작성해야함
+        const html에서가져온이미지첫번째파일 = e.target.files[0]
+
+        if(html에서가져온이미지첫번째파일){
+            if(!html에서가져온이미지첫번째파일.type.startsWith('image/')){
+                alert("이미지 파일만 업로드 가능합니다.");
+                e.target.value = ""; // 한 번더 안정적으로 input 내 데이터 제거
+                return;
+            }
+
+            // 파일 크기 검증 (예 : 5MB 제한)
+            const maxsize = 5 * 1024 * 1024;
+            if(html에서가져온이미지첫번째파일.size > maxsize) {
+                alert("파일 크기는 5MB 이하여야 합니다.");
+                e.target.value = "";
+                return;
+            }
+
+            // FileReader 라는 자바스크립트에 내장된 읽기 기능을 사용해서
+            // 파일 미리보기 생성
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                // FileReader 를 만든 개발자가 target 한다음 value 나
+                // files[인덱스] 대신
+                // 가져온 것에 대한 결과라는 변수이름을 사용하여
+                // result 를 사용한다.
+                setPreviewImage(event.target.result);
+            }
+            // URL 에 존재하는 데이터를 읽겠다. reader 에서
+            reader.readAsDataURL(html에서가져온이미지첫번째파일);
+
+            setImageFile(html에서가져온이미지첫번째파일);
+
+            setProduct(prev => ({
+                ...prev,
+                imageUrl: html에서가져온이미지첫번째파일
+            }))
+        }
+    }
+
 
     // 입력값 변경 핸들러
     // 기존 변수명칭은 모두 setFormData 사용
@@ -54,6 +113,27 @@ const ProductUpload = () => {
         if(!product.productName.trim()){
             newErrors.productName = '상품명을 입력하세요.';
         }
+
+        if(!product.productCode.trim()) {
+            newErrors.productCode = '상품코드를 입력하세요.';
+        }
+
+        if(!product.category) {
+            newErrors.category = '카테고리를 입력하세요.';
+        }
+
+        if(!product.price || product.price <= 0) {
+            newErrors.price = '가격를 입력하세요.';
+        }
+
+        if(!product.stockQuantity || product.stockQuantity <= 0) {
+            newErrors.stockQuantity = '재고수량을 입력하세요.';
+        }
+
+        setErrors(newErrors);
+        // 에러값이 모두 다 데이터 0 일 때만 통과
+        // 에러 값이 존재하면 등록 불가 처리
+        return Object.keys(newErrors).length === 0;
     }
 
     // 폼 제출 핸들러
@@ -63,12 +143,35 @@ const ProductUpload = () => {
         // if(!validateForm()){
         //     return;
         // }
+
         setLoading(true);
 
         // 백엔드 연결 시도
         try{
+            const uploadFormData = new FormData();
+
+            // product 에서 imageUrl 을 제외한 나머지 데이터만 productData 라는 변수이름 내에 데이터 전달
+            const {imageUrl, ...productData} = product;
+
+            // product 정보를 JSON Blob 으로 추가
+            const productBlob = new Blob(
+                [JSON.stringify(productData)],
+                {type : 'application/json'}
+            );
+
+            uploadFormData.append('product', productBlob);
+
+            // 이미지 파일이 있으면 추가
+            if(imageFile) {
+                uploadFormData.append('imageFile', imageUrl);
+            }
+
             const r = await axios.post(
-                '/api/product',product
+                'http://localhost:8085/api/product', uploadFormData, {
+                    headers : {
+                        'Content-Type' : 'multipart/form-data'
+                    }
+                }
             );
             if(r.data.success){
                 alert(r.data.message);
@@ -92,67 +195,6 @@ const ProductUpload = () => {
         if(window.confirm("작성 중인 내용이 사라집니다. 작성을 취소하시겠습니까?")) {
             navigate("/");
         }
-    }
-
-    const handleProductImage = async (e) => {
-        const file = e.target.files[0];
-
-        if(!file) return;
-
-        if(!file.type.startsWith("image/")) {
-            alert("이미지 파일만 업로드 가능합니다.");
-            return;
-        }
-
-        // 파일 크기 확인 (5MB)
-        if(file.size > 10 * 1024 * 1024) {
-            alert("파일 크기는 5MB 를 초과할 수 없습니다.");
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onloadend = (e) => {
-            setProductImage(e.target.result);
-        }
-        reader.readAsDataURL(file)
-        setProductImage(file);
-        await uploadProductImage(file)
-    }
-
-    const uploadProductImage = async (file) => {
-        setIsUploading(true);
-
-        try {
-            const uploadFormData = new FormData();
-            uploadFormData.append("file", file);
-            uploadFormData.append("productName", product.productName);
-
-            const res = await axios.post('/api/product/product-image', uploadFormData, {
-                headers : {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-
-            console.log("res.data.success : ", res.data.success);
-
-            if (res.data.success === true) {
-                alert("상품 이미지가 등록되었습니다.");
-                setProductImage(res.data.imageUrl);
-            }
-
-        } catch(error) {
-            alert(error);
-            // 실패 시 원래 이미지로 복구
-            setProductImage(product?.imageUrl || 'static/img/default.png');
-        } finally {
-            setIsUploading(false);
-        }
-
-    }
-
-    const handleProductClick = () => {
-        productInputRef.current?.click();
-        // 새로고침하여, 프로필이미지 초기화 되는 것이 아니라, 현재 상태를 유지한 채로 클릭을 진행한다.
     }
 
     return (
@@ -267,24 +309,35 @@ const ProductUpload = () => {
                         />
                     </div>
 
-
+                    {/* 상품 미리보기가 null 값일 경우 보여주지 않기 세팅*/}
                     <div className="form-group" >
-                        <label htmlFor="imageUrl">
-                            이미지 URL
+                        <label htmlFor="imageUrl" className="btn-upload">
+                            이미지 업로드
                         </label>
-                        <div onClick={handleProductClick}>
-                            <img src={productImage}
-                                 className="product-image"/>
-                        </div>
-                        <div className="profile-image-overlay">
-                            {isUploading ? "업로드 중..." : "이미지 변경"}
-                        </div>
                         <input type="file"
-                               ref={productInputRef}
-                               onChange={handleProductImage}
+                               id="imageUrl"
+                               name="imageUrl"
+                               onChange={handleChangeImage}
+                               style={{display : 'none'}}
                                accept="image/*"
-                               style={{display : 'none'}}/>
-                        <span className="form-hint">이미지를 클릭하여 변경할 수 있습니다.(최대 10MB)</span>
+                               />
+                        <span className="form-hint">
+                            상품 이미지를 업로드 하세요. (최대 5MB 이미지 파일만 가능)
+                        </span>
+                        {previewImage && (
+                            <div className="image-preview">
+                                <img src={previewImage}
+                                     alt={previewImage}
+                                     style={{
+                                         maxWidth : '300px',
+                                         maxheight : '300px',
+                                         marginTop : '10px',
+                                         border : '1px solid #ddd',
+                                         borderRadius : '5px',
+                                         paddingTop : '5px'
+                                     }}/>
+                            </div>
+                        )}
                     </div>
 
 
