@@ -1,9 +1,9 @@
 // 글쓰기
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {NavLink, useNavigate} from "react-router-dom";
 import {boardSave} from "../service/ApiService";
-import {handleInputChange} from "../service/commonService";
+import {handleChangeImage, handleInputChange} from "../service/commonService";
 import {useAuth} from "../context/AuthContext";
 import "../App.css";
 /*
@@ -28,56 +28,67 @@ if(user) {
     email = undefined;
 }
 */
+/*
+TODO : 게시물 작성하기 에서 게시물 관련 이미지 추가 넣기
+// 1. 게시물 작성할 때, 게시물 이미지 추가하기 와 같은 라벨 추가
+// 2. 라벨을 선택했을 때 이미지만 선택 가능하도록 input 설정
+// 3. input = display none
+// 4. 이미지 추가하기 클릭하면 새롭게 클릭된 이미지로 변경
 
+
+// 등록하기를 했을 경우에만 추가하기 가능!
+ */
 const BoardWrite = () => {
 
-    // react-router-dom 에 존재하는 path 주소 변경 기능 사용
     const navigate = useNavigate();
     const {user, isAuthenticated, logoutFn} = useAuth();
-    // js 는 컴파일형태가 아니고, 변수 정의는 순차적으로 진행하므로, user 를 먼저 호출하고 나서
-    // user 관련된 데이터 활용
+    const boarImgFileInputRef  = useRef(null);
 
-    // form 데이터 내부 초기값
-    // 작성자 -> 나중에 로그인한 아이디로 박제. 변경 불가하게
-    const [formData, setFormData] = useState({
+    const [uploadedBoardImageFile, setUploadedBoardImageFile] = useState(null);
+    const [boardImagePreview, setBoardImagePreview] = useState(null);
+
+    const [boards, setBoards] = useState({
         title: '',
         content: '',
         writer: user?.memberEmail || '',
+        imageUrl: '',
     })
 
-    const handleSubmit = (e) => {
-        e.preventDefault(); // 제출 일시 정지
-        boardSave(axios, {...formData,
-            writer:user?.memberEmail
-        }, navigate);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const boardUploadFormData = new FormData();
+        const {imageUrl, ...boardDataWithoutImage} = boards;
+
+        boardDataWithoutImage.writer = user?.memberEmail;
+
+        const boardDataBlob = new Blob(
+            [JSON.stringify(boardDataWithoutImage)],
+            {type: 'application/json'}
+        )
+
+        boardUploadFormData.append("board", boardDataBlob);
+
+        if (uploadedBoardImageFile) boardUploadFormData.append("imageFile", uploadedBoardImageFile);
+
+        await boardSave(axios, boardUploadFormData, navigate);
     }
 
-    // const handleSubmit = (e) => {
-    //     e.preventDefault(); // 제출 일시 정지
-    //
-    //     boardSave(axios, formData, navigate);
-    // }
-
-
     const handleChange = (e) => {
-        handleInputChange(e, setFormData);
+        handleInputChange(e, setBoards);
     }
 
     const handleCancel = () => {
-        // ok 를 할 경우 게시물 목록으로 돌려보내기
-        // 기능이 하나이기 때문에 if 다음 navigate 는 {} 생략 후 작성
+
         if (window.confirm("작성을 취소하시겠습니까?")) navigate('/board');
     }
 
     return (
         <div className="page-container">
-            {isAuthenticated ? /* return 이 생략된 형태 */(
+            {isAuthenticated ? (
                 <>
                     <h1>글쓰기</h1>
                     <form onSubmit={handleSubmit}>
-                        {/* 로그인 상태에 따라 다른 메뉴 표시
-                            formData.writer 에 user?.memberEmail 데이터를 전달하기
-                        */}
                         <div className="writer-section">
                             <label>작성자 :</label>
                             <div className="writer-display">
@@ -89,17 +100,52 @@ const BoardWrite = () => {
                             <input type="text"
                                    id="title"
                                    name="title"
-                                   value={formData.title}
+                                   value={boards.title}
                                    onChange={handleChange}
                                    placeholder="제목를 입력하세요."
                                    maxLength={200}
                                    required/>
                         </label>
 
+                        <div className="form-group">
+                            <label htmlFor="imageUrl" className="btn-upload">
+                                게시물 이미지 추가하기
+                            </label>
+                            <input
+                                type="file"
+                                id="imageUrl"
+                                name="imageUrl"
+                                ref={boarImgFileInputRef }
+                                onChange={handleChangeImage(setBoardImagePreview, setUploadedBoardImageFile, setBoards)}
+                                accept="image/*"
+                                style={{display: 'none'}}
+                            />
+                            <small className="form-hint">
+                                게시물 이미지를 업로드 하세요. (최대 5MB, 이미지 파일만 가능)
+                            </small>
+
+                            {boardImagePreview && (
+                                <div className="image-preview">
+                                    <img
+                                        src={boardImagePreview}
+                                        alt="미리보기"
+                                        style={{
+                                            maxWidth: '100%',
+                                            maxHeight: '400px',
+                                            marginTop: '10px',
+                                            border: '1px solid #ddd',
+                                            borderRadius: '5px',
+                                            padding: '5px'
+                                        }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
                         <label>내용 :
                             <textarea id="content"
                                       name="content"
-                                      value={formData.content}
+                                      value={boards.content}
                                       onChange={handleChange}
                                       placeholder="내용를 입력하세요."
                                       rows={15}

@@ -1,8 +1,8 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {fetchBoardDetail} from "../service/ApiService";
-import { goToPage, renderLoading} from "../service/commonService";
+import {fetchBoardDetail, getProfileImageUrl} from "../service/ApiService";
+import {goToPage, renderLoading} from "../service/commonService";
 
 const BoardDetail = () => {
     const {id} = useParams(); //URL 에서 id 가져오기
@@ -25,6 +25,15 @@ const BoardDetail = () => {
     return (
         <div className="page-container">
             <h1 className="board-detail-title">{board.title}</h1>
+            <div className="product-detail-image">
+                {board.boardImage ?
+                    <img src={board.boardImage}
+                         alt={board.title}/>
+                    :
+                    <img src="/static/img/default.png"
+                         alt="default"
+                    />}
+            </div>
             <div className="board-detail-info">
                 <span>작성자 : {board.writer}</span>
                 <span>조회수 : {board.viewCount}</span>

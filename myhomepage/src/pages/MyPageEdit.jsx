@@ -45,6 +45,7 @@ const MyPageEdit = () => {
 
     const navigate = useNavigate();
     const {user, isAuthenticated, updateUser, loading} = useAuth();
+
     // 페이지 리랜더링이 될 때 현재 데이터를 그대로 유지하기 위해 사용
     // 새로고침 되어도 초기값으로 돌아가는 것이 아니라 현재 상태를 그대로 유지
     const fileInputRef = useRef(null);
