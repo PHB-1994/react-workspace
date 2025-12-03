@@ -1,13 +1,19 @@
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {handleChangeImage, handleInputChange} from "../service/commonService";
+import {useAuth} from "../context/AuthContext";
 
 // 상품 이미지 업로드
 // profileImage -> imageUrl 을 이용해서 상품 업로드 시 제품 미리보기
 const ProductUpload = () => {
     const navigate = useNavigate();
+    const {isAuthenticated} = useAuth();
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!loading && !isAuthenticated) navigate("/login");
+    }, [loading, isAuthenticated, navigate]);
 
     const [product, setProduct] = useState({
         productName: '',

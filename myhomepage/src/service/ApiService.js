@@ -179,6 +179,17 @@ export const getProfileImageUrl = (user) => {
     return `${API_URL}/profile_images/${user.memberProfileImage}`;
 }
 
+export const getProductImageUrl = (product) => {
+    if(!product?.imageUrl) return '/static/img/default.png';
+    // memberProfileImage 가 전체 URL 인 경우
+    if(product.imageUrl.startsWith('http')) return product.imageUrl;
+    if(product.imageUrl.startsWith('/product_images/')) {
+        return `${API_URL}${product.imageUrl}`;
+    }
+    // 파일명만 있는 경우
+    return `${API_URL}/product_images/${product.imageUrl}`;
+}
+
 /***********************************************************
  제품 백엔드 관련 함수
  ***********************************************************/
