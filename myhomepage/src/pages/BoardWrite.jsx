@@ -42,7 +42,7 @@ const BoardWrite = () => {
     // 상세 이미지 관련 (최대 5장)
     const detailImgsFileInputRef  = useRef(null);
     const [uploadedDetailBoardImageFiles, setUploadedDetailBoardImageFiles] = useState(null);
-    const [boardDetailImagePreviews, setBoardDetailImagePreviews] = useState(null);
+    const [boardDetailImagePreviews, setBoardDetailImagePreviews] = useState([]);
 
     const [board, setBoard] = useState({
         title: '',
@@ -184,6 +184,38 @@ const BoardWrite = () => {
                                             padding: '5px'
                                         }}
                                     />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* 상세 이미지 여러 장 업로드 & 미리보기 */}
+                        <div className="form-group">
+                            <labe htmlFor="detailImages" className="btn-upload">
+                                상세 이미지 추가하기 (최대 5장)
+                            </labe>
+                            <input type="file"
+                                   id="detailImages"
+                                   name="detailImages"
+                                   ref={detailImgsFileInputRef}
+                                   onChange={handleDetailImagesChanges}
+                                   accept="image/*"
+                                   multiple
+                                   style={{display : 'none'}}/>
+                            <small className="form-hint">
+                                상세 이미지를 업로드하세요. (최대 5개, 각 5MB 이하)
+                            </small>
+
+                            {boardDetailImagePreviews.length > 0 && (
+                                <div className="multiple-images-preview">
+                                    <p className="detail-images-selected-text">
+                                        선택된 이미지 : {boardDetailImagePreviews.length}개
+                                    </p>
+                                    {boardDetailImagePreviews.map((image, index) => (
+                                        <div key={index} className="detail-image-item">
+                                            <img src={image}
+                                                 alt={`상세이미지 ${index + 1}`} />
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
