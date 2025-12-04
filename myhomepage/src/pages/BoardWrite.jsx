@@ -28,54 +28,100 @@ if(user) {
     email = undefined;
 }
 */
-/*
-TODO : 게시물 작성하기 에서 게시물 관련 이미지 추가 넣기
-// 1. 게시물 작성할 때, 게시물 이미지 추가하기 와 같은 라벨 추가
-// 2. 라벨을 선택했을 때 이미지만 선택 가능하도록 input 설정
-// 3. input = display none
-// 4. 이미지 추가하기 클릭하면 새롭게 클릭된 이미지로 변경
 
-
-// 등록하기를 했을 경우에만 추가하기 가능!
- */
 const BoardWrite = () => {
 
     const navigate = useNavigate();
     const {user, isAuthenticated, logoutFn} = useAuth();
-    const boarImgFileInputRef  = useRef(null);
 
-    const [uploadedBoardImageFile, setUploadedBoardImageFile] = useState(null);
-    const [boardImagePreview, setBoardImagePreview] = useState(null);
+    // 메인 이미지 관련
+    const mainImgFileInputRef  = useRef(null);
+    const [uploadedMianBoardImageFile, setUploadedMianBoardImageFile] = useState(null);
+    const [boardMianImagePreview, setBoardMianImagePreview] = useState(null);
 
-    const [boards, setBoards] = useState({
+    // 상세 이미지 관련 (최대 5장)
+    const detailImgsFileInputRef  = useRef(null);
+    const [uploadedDetailBoardImageFiles, setUploadedDetailBoardImageFiles] = useState(null);
+    const [boardDetailImagePreviews, setBoardDetailImagePreviews] = useState(null);
+
+    const [board, setBoard] = useState({
         title: '',
         content: '',
         writer: user?.memberEmail || '',
-        imageUrl: '',
     })
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const boardUploadFormData = new FormData();
-        const {imageUrl, ...boardDataWithoutImage} = boards;
 
-        boardDataWithoutImage.writer = user?.memberEmail;
+        const boardData = {
+            title: board.title,
+            content: board.content,
+            writer: user?.memberEmail
+        }
 
         const boardDataBlob = new Blob(
-            [JSON.stringify(boardDataWithoutImage)],
+            [JSON.stringify(boardData)],
             {type: 'application/json'}
         )
 
         boardUploadFormData.append("board", boardDataBlob);
 
-        if (uploadedBoardImageFile) boardUploadFormData.append("imageFile", uploadedBoardImageFile);
+        if (uploadedMianBoardImageFile) boardUploadFormData.append("imageFile", uploadedMianBoardImageFile);
 
         await boardSave(axios, boardUploadFormData, navigate);
     }
 
+    // 상세 이미지 여러 장 변경 핸들러
+    const handleDetailImagesChanges = (e) => {
+        const files = Array.from(e.target.files);
+
+        // 최대 5장 까지만 허용
+        if(files.length > 5) {
+            alert("상세 이미지는 최대 5장 까지 업로드 가능합니다.");
+            return;
+        }
+
+        // 각 파일이 5MB 가 넘는지 검증
+        for(let f of files) {
+            if(f.size > 5 * 1024 * 1024) {
+                alert(`${f.name}의 크기가 5MB 를 초과합니다.`);
+                return;
+            }
+
+            if(!f.type.startsWith('image/')) {
+                alert(`${f.name}은 이미지 파일이 아닙니다.`);
+                return;
+            }
+
+        }
+        // for 문을 통해서 모든 사진에 대한 검증이 종료되면, 상세 이미지 파일에 파일명칭 저장
+        setUploadedDetailBoardImageFiles(files);
+
+        // 미리보기 생성
+        const 미리보기할_상세사진들 = [];
+        let 사진개수 = 0;
+
+        files.forEach((file,사진순서) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                미리보기할_상세사진들[사진순서] = reader.result;
+                사진개수++;
+
+                // 모든 파일 로드 완료 시
+                if(사진개수 === files.length) {
+                    // 미리보기 화면에서 보일 수 있도록 setter 를 이용하여 미리보기 변수에 저장
+                    setBoardDetailImagePreviews(미리보기할_상세사진들);
+                }
+            }
+            // 파일 하나씩 하나씩 미리보기 생성 ~
+            reader.readAsDataURL(file);
+        })
+    }
+
     const handleChange = (e) => {
-        handleInputChange(e, setBoards);
+        handleInputChange(e, setBoard);
     }
 
     const handleCancel = () => {
@@ -100,7 +146,7 @@ const BoardWrite = () => {
                             <input type="text"
                                    id="title"
                                    name="title"
-                                   value={boards.title}
+                                   value={board.title}
                                    onChange={handleChange}
                                    placeholder="제목를 입력하세요."
                                    maxLength={200}
@@ -115,8 +161,8 @@ const BoardWrite = () => {
                                 type="file"
                                 id="imageUrl"
                                 name="imageUrl"
-                                ref={boarImgFileInputRef }
-                                onChange={handleChangeImage(setBoardImagePreview, setUploadedBoardImageFile, setBoards)}
+                                ref={mainImgFileInputRef }
+                                onChange={handleChangeImage(setBoardMianImagePreview, setUploadedMianBoardImageFile, setBoard)}
                                 accept="image/*"
                                 style={{display: 'none'}}
                             />
@@ -124,10 +170,10 @@ const BoardWrite = () => {
                                 게시물 이미지를 업로드 하세요. (최대 5MB, 이미지 파일만 가능)
                             </small>
 
-                            {boardImagePreview && (
+                            {boardMianImagePreview && (
                                 <div className="image-preview">
                                     <img
-                                        src={boardImagePreview}
+                                        src={boardMianImagePreview}
                                         alt="미리보기"
                                         style={{
                                             maxWidth: '100%',
@@ -145,7 +191,7 @@ const BoardWrite = () => {
                         <label>내용 :
                             <textarea id="content"
                                       name="content"
-                                      value={boards.content}
+                                      value={board.content}
                                       onChange={handleChange}
                                       placeholder="내용를 입력하세요."
                                       rows={15}
