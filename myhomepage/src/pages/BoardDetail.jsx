@@ -1,5 +1,5 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {fetchBoardDetail, getProfileImageUrl} from "../service/ApiService";
 import {goToPage, renderLoading} from "../service/commonService";
@@ -22,12 +22,18 @@ const BoardDetail = () => {
         goToPage(navigate, "/board");
     }
 
+    let 상세이미지들 = [];
+
+    if (board.boardDetailImage) {
+        상세이미지들 = board.boardDetailImage.split(',');
+    }
+
     return (
         <div className="page-container">
             <h1 className="board-detail-title">{board.title}</h1>
             <div className="product-detail-image">
-                {board.boardImage ?
-                    <img src={board.boardImage}
+                {board.boardMainImage ?
+                    <img src={board.boardMainImage}
                          alt={board.title}/>
                     :
                     <img src="/static/img/default.png"
@@ -39,6 +45,11 @@ const BoardDetail = () => {
                 <span>조회수 : {board.viewCount}</span>
                 <span>작성일 : {board.createdAt}</span>
             </div>
+            {상세이미지들.map((이미지경로, 순번) => (
+                <div key={순번}>
+                    <img src={이미지경로}/>
+                </div>
+            ))}
             <div className="board-detail-content">
                 {board.content}
             </div>

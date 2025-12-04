@@ -68,7 +68,16 @@ const BoardWrite = () => {
 
         boardUploadFormData.append("board", boardDataBlob);
 
-        if (uploadedMianBoardImageFile) boardUploadFormData.append("imageFile", uploadedMianBoardImageFile);
+        if (uploadedMianBoardImageFile)
+            boardUploadFormData.append("mainImage", uploadedMianBoardImageFile);
+
+        // 상세 이미지들 추가
+        if(상세사진_이름들 && 상세사진_이름들.length > 0) {
+            // forEach 는 향상된 for 문으로 [] 에서 한장씩 꺼내 추가
+            상세사진_이름들.forEach((사진한장씩) => {
+                boardUploadFormData.append('detailImage', 사진한장씩);
+            });
+        }
 
         await boardSave(axios, boardUploadFormData, navigate);
     }
